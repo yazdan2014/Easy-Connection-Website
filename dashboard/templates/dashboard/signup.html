@@ -1,0 +1,19 @@
+<h1>Sign Up</h1>
+{% if form.errors %}
+    {% for field in form %}
+        {% for error in field.errors %}
+            <p> {{ error }} </p>
+        {% endfor %}
+    {% endfor %}
+{% endif %}
+<br/><br/>
+    {% if messages %}
+        {% for message in messages%}
+            {{ message }}
+        {% endfor %}
+    {% endif %}
+    <form action="{% url 'signup' %}" method=POST>
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Submit">
+    </form>
