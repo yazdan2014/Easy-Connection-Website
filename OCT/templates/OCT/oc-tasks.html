@@ -180,7 +180,7 @@
         </button>
     </div>
     <div class="col-sm-6 col-lg-3">
-        <button type="button" data-toggle="modal" data-target="#monthly_task">
+        <button type="button" data-toggle="modal" data-target="#monthly_task" >
             <div class="overview-item overview-item--c4 text-left">
                 <div class="overview__inner ">
                         <div class="overview-box clearfix">
@@ -240,10 +240,10 @@
                             </td>
                             <td>
                                 <div class="table-data-feature">
-                                    <button class="item" data-toggle="tooltip" data-placement="top" title="Edit">
+                                    <button data-toggle="modal" data-target="#daily_task_edit_{{ task.topic }}" class="item" data-toggle="tooltip" data-placement="top" title="Edit">
                                         <i class="zmdi zmdi-edit"></i>
                                     </button>
-                                    <button class="item" onclick="window.location.href='{% url "oc-update" %}?name={{ task.topic }}&type=daily';" data-toggle="tooltip" data-placement="top" title="Delete">
+                                    <button class="item" onclick="window.location.href='{% url "oc-update" %}?name={{ task.topic }}&type=daily';" data-toggle="tooltip" data-placement="top" title="Delete Task">
                                         <i class="zmdi zmdi-delete"></i>
                                     </button>
                                     <button class="item" data-toggle="tooltip" data-placement="top" title="Close Task">
@@ -355,7 +355,7 @@
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="daily_taskLabel">Large Modal</h5>
+                <h5 class="modal-title" id="daily_taskLabel">New Daily Task</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -420,6 +420,80 @@
         </div>
     </div>
 </div>
+
+{% for task in daily_tasks %}
+    <div class="modal fade" id="daily_task_edit_{{ task.topic }}" tabindex="-1" role="dialog" aria-labelledby="daily_task_edit_{{ task.topic }}" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="daily_taskLabel">Edit Daily Task</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form action="{% url 'oc-update' %}" method="post" enctype="multipart/form-data" class="form-horizontal">
+                    {% csrf_token %} 
+                    <div class="modal-body px-5">
+                            {% comment %} <div class="row form-group">
+                                <div class="col col-md-3">
+                                    <label class=" form-control-label">Static</label>
+                                </div>
+                                <div class="col-12 col-md-9">
+                                    <p class="form-control-static">Username</p>
+                                </div>
+                            </div> {% endcomment %}
+                            <input type="hidden" hidden name='type' value="daily">
+                            <input type="hidden" hidden name='pk' value="{{ task.id }}">
+                            <div class="row form-group">
+                                <div class="col col-md-3">
+                                    <label for="text-input" class=" form-control-label">Topic</label>
+                                </div>
+                                <div class="col-12 col-md-9">
+                                    <input required value='{{ task.topic }}' type="text" id="topic" name="topic" placeholder="topic" class="form-control">
+                                    <small class="form-text text-muted">Enter a topic for your daily goal</small>
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col col-md-3">
+                                    <label for="text-input" class=" form-control-label">Estimated Time</label>
+                                </div>
+                                <div class="col-12 col-md-9">
+                                    <input required value='{{ task.estimated_time }}' type="text" id="estimated" name="estimated" placeholder="estimated" class="form-control">
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col col-md-3">
+                                    <label for="select" class=" form-control-label">Goal related to</label>
+                                </div>
+                                <div class="col-12 col-md-9">
+                                    <select name="goal" id="select" class="form-control">
+                                        <option value="">None</option>
+                                        {% for taskm in monthly_tasks %}
+                                        <option {% if taskm == task.goal_related_to %}selected{% endif %} value="{{ taskm.goal }}">{{ taskm.goal }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col col-md-3">
+                                    <label for="textarea-input" class=" form-control-label">Description</label>
+                                </div>
+                                <div class="col-12 col-md-9">   
+                                    <textarea name="description" id="description" rows="9" placeholder="Description..." class="form-control">{{ task.description }}</textarea>
+                                </div>
+                            </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Confirm</button>
+                    </div>
+                
+                </form>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+
 {% endblock %}
 
 {% block script %}

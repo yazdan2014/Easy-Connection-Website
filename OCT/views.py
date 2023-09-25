@@ -40,14 +40,16 @@ def update_task(request):
         return redirect("login")
     
     if request.method == "POST":
+        
         if request.POST['type'] == 'daily':
-            new_daily_task = DailyTasks.objects.create(topic=request.POST['topic'],description=request.POST['description'],estimated_time=request.POST['estimated'])
-            OCT.objects.filter(user=request.user).first().daily_tasks.add(new_daily_task)
+            mt = OCT.objects.filter(user=request.user).first().monthly_tasks.filter(goal=request.POST['goal']).first()
+
+            OCT.objects.filter(user=request.user).first().daily_tasks.filter(pk=request.POST['pk']).update(topic=request.POST['topic'],estimated_time=request.POST['estimated'],goal_related_to=mt,description=request.POST['description'])
+
             return redirect('oc-tasks')
 
         if request.POST['type'] == 'monthly':
-            new_monthly_task = MonthlyTasks.objects.create(goal=request.POST['goal'],description=request.POST['description'],progress_percentage=request.POST['progress'])
-            OCT.objects.filter(user=request.user).first().monthly_tasks.add(new_monthly_task)
+            OCT.objects.filter(user=request.user).first().monthly_tasks.filter(pk=request.POST['pk']).update(topic=request.POST['topic'],estimated_time=request.POST['estimated'],goal_related_to=mt,description=request.POST['description'])
             return redirect('oc-tasks')
 
 
