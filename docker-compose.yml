@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7.0.11-alpine
+  django:
+    container_name: django
+    build:
+      context: ./EasyConnectionSoftware
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes: 
+      - ./EasyConnectionSoftware:/usr/src/app/
+    ports:
+      - 8001:8000
+    depends_on:
+      - redis
+
+  celery:
+    container_name: celery
+    build:
+      context: ./EasyConnectionSoftware
+    command: celery --app=EasyConnectionSoftware worker -l INFO
+    volumes: 
+      - ./EasyConnectionSoftware:/usr/src/app/
+    depends_on:
+      - redis
