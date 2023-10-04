@@ -331,6 +331,65 @@
       });
     }
 
+    var ctxs = document.getElementsByClassName("percent-charts");
+    if (ctxs) {
+      Array.from(ctxs).forEach(function(ctx){
+        ctx.height = 70;
+        var myChart = new Chart(ctx, {
+          type: 'doughnut',
+          data: {
+            datasets: [
+              {
+                label: "My First dataset",
+                data: [ctx.getAttribute('dailytasksDone'), ctx.getAttribute('dailytasksNotDone')],
+                backgroundColor: [
+                  '#00b5e9',
+                  '#fa4251'
+                ],
+                hoverBackgroundColor: [
+                  '#00b5e9',
+                  '#fa4251'
+                ],
+                borderWidth: [
+                  0, 0
+                ],
+                hoverBorderColor: [
+                  'transparent',
+                  'transparent'
+                ]
+              }
+            ],
+            labels: [
+              'Tasks Done',
+              'Tasks Not Done'
+            ]
+          },
+          options: {
+            maintainAspectRatio: false,
+            responsive: false,
+            cutoutPercentage: 55,
+            animation: {
+              animateScale: true,
+              animateRotate: true
+            },
+            legend: {
+              display: false
+            },
+            tooltips: {
+              titleFontFamily: "Poppins",
+              xPadding: 15,
+              yPadding: 10,
+              caretPadding: 0,
+              bodyFontSize: 16,
+              responsive: false
+            }
+          }
+        });
+  
+      } )
+    }
+
+
     // Percent Chart
     var ctx = document.getElementById("percent-chart");
     if (ctx) {

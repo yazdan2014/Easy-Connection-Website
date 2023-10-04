@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'dashboard',
     'OCT',
-    "scheduler"
+    "scheduler",
+    'django_celery_beat'
 ]
 
 AUTH_USER_MODEL = "dashboard.User"
@@ -111,13 +112,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'Asia/Tehran'
 
-USE_I18N = True
 
-USE_L10N = True
-
-USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
@@ -133,6 +129,26 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+from datetime import timedelta
 import os
+from celery.schedules import crontab
+
+
 CELERY_BROKER_URL = os.environ.get('CELERY_BROKER', "redis://redis:6379/0")
 CELERY_RESULT_BACKEND = os.environ.get('CELERY_BROKER', "redis://redis:6379/0")
+CELERY_TASK_ALWAYS_EAGER = False
+CELERY_ENABLE_UTC = False
+CELERY_TIMEZONE = 'Iran'
+TIME_ZONE = 'Iran'
+CELERY_ENABLE_UTC = False
+CELERY_USE_TZ = False
+TZ= "Iran"
+USE_TZ = False
+
+
+CELERY_BEAT_SCHEDULE = {
+    'Daily Tasks Handle': {
+        'task': 'OCT.tasks.daily_tasks_handle',
+        'schedule': crontab(minute=38,hour=13)
+    },
+}

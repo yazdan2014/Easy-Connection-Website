@@ -5,7 +5,9 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
 from .models import *
+from dashboard.models import User
 import json
+from datetime import date
 
 # Create your views here.
 def dashboard_oc_tasks(request):
@@ -31,9 +33,11 @@ def dashboard_oc_tasks(request):
     
     found_oct = OCT.objects.filter(user=request.user).first()
     monthly_tasks = list(found_oct.monthly_tasks.all())
-    daily_tasks = list(found_oct.daily_tasks.all())
+    daily_tasks = list(found_oct.daily_tasks.filter(created_at__gte=date.today()))
 
     return render(request, 'OCT/oc-tasks.html',{'page':'oc-tasks','daily_tasks':daily_tasks,"monthly_tasks":monthly_tasks})
+
+
 
 def update_task(request):
     if not request.user.is_authenticated:
@@ -80,15 +84,32 @@ def close_task(request):
             OCT.objects.filter(user=request.user).first().monthly_tasks.filter(pk=request.POST['pk']).update(goal=request.POST['goal'],progress_percentage=request.POST['progress'],description=request.POST['description'])
             return redirect('oc-tasks')
 
+def oc_admin(request):
+    if not request.user.is_authenticated:
+        return redirect("login")
 
-    # if request.method == 'GET':
-    #     found_oct = OCT.objects.filter(user=request.user).first()
-    #     print(request.GET['type'])
-    #     # if request.GET['type'] == 'monthly':
-    #     #     found_oct.monthly_tasks.filter(goal=request.GET['name']).delete()
+    users = list(User.objects.all())
+    users_serialzed = []
+    for user in users:
+        oct = OCT.objects.filter(user=user).first()
+        daily_done = oct.daily_tasks.filter(status='done').count()
+        daily_notdone = oct.daily_tasks.count() - daily_done
 
-    #     if request.GET['type'] == 'daily':
-    #         found_oct.daily_tasks.filter(pk=request.GET['pk']).delete()
+        monthly_done = oct.daily_tasks.filter(status='done').count()
+        monthly_notdone = oct.daily_tasks.count() - monthly_done
 
-    #     # found_oct.daily_tasks.filter(id)
-    #     return redirect("oc-tasks")
+        
+
+        serializer = {
+            'first_name':user.first_name,
+            'last_name':user.last_name,
+            'email':user.email,
+            'last_login':user.last_login,
+            'daily_tasks':{'done':daily_done,"notdone":daily_notdone},
+            'monthly_tasks':{'done':monthly_done,"notdone":monthly_notdone}
+        }
+        
+        print(serializer['daily_tasks']['done'])
+        users_serialzed.append(serializer)
+    
+    return render(request, 'OCT/oc-admin.html',{'page':'oc-admin','users':users_serialzed})

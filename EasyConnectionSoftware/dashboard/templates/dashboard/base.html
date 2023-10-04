@@ -80,6 +80,10 @@
                             <a href={% url "oc-tasks"%}>
                                 <i class="far  fa-calendar-o"></i>Opening/Closing Tasks</a>
                         </li>
+                        <li {% if page == "oc-admin" %} class="active" {% endif %}>
+                            <a href={% url "oc-admin"%}>
+                                <i class="fas fa-desktop"></i>OCT Admin</a>
+                        </li>
                     </ul>
                 </div>
             </nav>
@@ -111,6 +115,10 @@
                         <li {% if page == "oc-tasks" %} class="active" {% endif %}>
                             <a href={% url "oc-tasks"%}>
                                 <i class="far  fa-calendar-o"></i>Opening/Closing Tasks</a>
+                        </li>
+                        <li {% if page == "oc-admin" %} class="active" {% endif %}>
+                            <a href={% url "oc-admin"%}>
+                                <i class="fas fa-desktop"></i>OCT Admin</a>
                         </li>
                     </ul>
                 </nav>

@@ -19,8 +19,33 @@ services:
     container_name: celery
     build:
       context: ./EasyConnectionSoftware
-    command: celery --app=EasyConnectionSoftware worker -l INFO
+    command: celery --app=EasyConnectionSoftware worker -l INFO --pool=solo
     volumes: 
       - ./EasyConnectionSoftware:/usr/src/app/
     depends_on:
       - redis
+
+  beat:
+    container_name: beat
+    build:
+      context: ./EasyConnectionSoftware
+    command: celery --app=EasyConnectionSoftware beat -l INFO
+    volumes: 
+      - ./EasyConnectionSoftware:/usr/src/app/
+    depends_on:
+      - redis
+
+  flower:
+    container_name: flower
+    build:
+      context: ./EasyConnectionSoftware
+    command: celery --broker=redis://redis:6379/0 flower --port=5555
+    volumes: 
+      - ./EasyConnectionSoftware:/usr/src/app/
+    ports:
+      - 5556:5555
+    depends_on:
+      - redis
+    environment:
+      - CELERY_TIMEZONE=Iran
+      - TZ=Iran

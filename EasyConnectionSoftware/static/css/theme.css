@@ -4148,9 +4148,8 @@ section {
 
 .percent-chart {
     padding-right: 65px;
-    padding-bottom: 40px;
-    padding-top: 27px;
 }
+
 
 @media (min-width: 992px) and (max-width: 1519px) {
     .percent-chart {
@@ -4621,7 +4620,7 @@ section {
     justify-content: flex-end;
 }
 
-.table-data-feature .item {
+.item {
     display: block;
     height: 30px;
     width: 30px;
@@ -4633,11 +4632,11 @@ section {
     margin-right: 5px;
 }
 
-.table-data-feature .item:last-child {
+.item:last-child {
     margin-right: 0;
 }
 
-.table-data-feature .item i {
+.item i {
     font-size: 20px;
     color: #808080;
     position: absolute;
