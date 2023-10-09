@@ -11,3 +11,7 @@ class SignupUserForm(UserCreationForm):
             'last_name',
             'email',
             'role')
+    def __init__(self, *args, **kwargs):
+        super(SignupUserForm, self).__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs['class'] = 'au-input au-input--full'

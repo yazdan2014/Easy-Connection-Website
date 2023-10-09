@@ -106,7 +106,8 @@ def oc_admin(request):
             'email':user.email,
             'last_login':user.last_login,
             'daily_tasks':{'done':daily_done,"notdone":daily_notdone},
-            'monthly_tasks':{'done':monthly_done,"notdone":monthly_notdone}
+            'monthly_tasks':{'done':monthly_done,"notdone":monthly_notdone},
+            'id':user.id
         }
         
         print(serializer['daily_tasks']['done'])

@@ -1,0 +1,9 @@
+{
+    "platform": "django",
+    "disks": [
+        {
+          "name": "database",
+          "mountTo": "db/"
+        }
+      ]
+  }

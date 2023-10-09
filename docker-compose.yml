@@ -20,7 +20,7 @@ services:
     build:
       context: ./EasyConnectionSoftware
     command: celery --app=EasyConnectionSoftware worker -l INFO --pool=solo
-    volumes: 
+    volumes:  
       - ./EasyConnectionSoftware:/usr/src/app/
     depends_on:
       - redis

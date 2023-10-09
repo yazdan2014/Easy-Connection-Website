@@ -26,7 +26,7 @@ def login_user(request):
             messages.error(request,'there was an error logging in, try again')
             return  render(request, 'dashboard/login.html')
     else:
-        return render(request, 'dashboard/login.html',{})
+        return render(request, 'dashboard/login.html')
     
 def logout_user(request):
     logout(request)
