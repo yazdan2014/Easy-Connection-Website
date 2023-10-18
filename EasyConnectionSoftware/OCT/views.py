@@ -7,7 +7,9 @@ from django.contrib.auth.forms import UserCreationForm
 from .models import *
 from dashboard.models import User
 import json
-from datetime import date
+from django.http import JsonResponse
+from datetime import *
+from django.db.models import Q
 
 # Create your views here.
 def dashboard_oc_tasks(request):
@@ -33,7 +35,7 @@ def dashboard_oc_tasks(request):
     
     found_oct = OCT.objects.filter(user=request.user).first()
     monthly_tasks = list(found_oct.monthly_tasks.all())
-    daily_tasks = list(found_oct.daily_tasks.filter(created_at__gte=date.today()))
+    daily_tasks = list(found_oct.daily_tasks.filter(Q(created_at__gte=date.today()) | Q(status='nd')))
 
     return render(request, 'OCT/oc-tasks.html',{'page':'oc-tasks','daily_tasks':daily_tasks,"monthly_tasks":monthly_tasks})
 
@@ -60,8 +62,8 @@ def update_task(request):
     if request.method == 'GET':
         found_oct = OCT.objects.filter(user=request.user).first()
         print(request.GET['type'])
-        # if request.GET['type'] == 'monthly':
-        #     found_oct.monthly_tasks.filter(goal=request.GET['name']).delete()
+        if request.GET['type'] == 'monthly':
+            found_oct.monthly_tasks.filter(pk=request.GET['id']).delete()
 
         if request.GET['type'] == 'daily':
             found_oct.daily_tasks.filter(pk=request.GET['pk']).delete()
@@ -110,7 +112,46 @@ def oc_admin(request):
             'id':user.id
         }
         
-        print(serializer['daily_tasks']['done'])
         users_serialzed.append(serializer)
     
-    return render(request, 'OCT/oc-admin.html',{'page':'oc-admin','users':users_serialzed})
+    
+    return render(request, 'OCT/oc-admin.html',{'page':'oc-admin','users':users_serialzed,'today':datetime.today()})
+
+
+def get_dailytasks(request):
+    if not request.user.is_authenticated:
+        return redirect("login")
+    
+    this_week = int(datetime.today().strftime("%U"))
+    selected_week = this_week - int(request.GET['week'])
+
+
+    res_raw = OCT.objects.filter(user=request.GET['uid']).first().daily_tasks.filter(created_at__week=selected_week)
+    final_res = {"Monday":[],"Tuesday":[],"Wednesday":[],"Thursday":[],"Friday":[],"Saturday":[],"Sunday":[]}
+    for res in res_raw:
+        serializer={
+            "id":res.id,
+            "status":res.get_status_display(),
+            "topic":res.topic,
+            "goal":res.goal_related_to.goal if res.goal_related_to else 'None',
+            "estimated_time":res.estimated_time,
+            "actual_time":res.actual_time,
+            "admin_comment":res.admin_comment,
+            'ca_time':res.created_at.time(),
+            'ca_weekday':res.created_at.weekday(),
+            'ca_weekdaystr':res.created_at.strftime("%A"),
+            'ca_date':res.created_at.date()
+        }
+        final_res[res.created_at.strftime("%A")].append(serializer)
+
+
+    return JsonResponse(final_res)
+
+def get_monthlygoals(request):
+    if not request.user.is_authenticated:
+        return redirect("login")
+    
+    this_month = datetime.today().date().month
+    print(this_month)
+    res_raw = list(OCT.objects.filter(user=request.GET['uid']).first().monthly_tasks.filter(created_at__month=this_month).values())
+    return JsonResponse({'data':res_raw})

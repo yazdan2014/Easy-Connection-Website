@@ -26,7 +26,7 @@ class MonthlyTasks(models.Model):
         return self.goal
 
 class DailyTasks(models.Model):
-    topic = models.CharField(max_length=150,unique=True)
+    topic = models.CharField(max_length=150)
     estimated_time = models.CharField(max_length=150)
     actual_time = models.CharField(max_length=150, null=True,blank=True)
     goal_related_to = models.ForeignKey('MonthlyTasks',related_name='goal_related_to',on_delete=models.CASCADE, blank=True, null=True)
@@ -46,10 +46,10 @@ class DailyTasks(models.Model):
     def __str__(self):
         return self.topic
 
-    def save(self, *args, **kwargs):
-        if not self.pk:
-            obj = super(DailyTasks, self).save(*args, **kwargs)
-            from .tasks import og_status
-            og_status.apply_async(args=[self.id],countdown=600)
-            return obj
-        return super(DailyTasks, self).save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     if not self.pk:
+    #         obj = super(DailyTasks, self).save(*args, **kwargs)
+    #         from .tasks import og_status
+    #         og_status.apply_async(args=[self.id],countdown=600)
+    #         return obj
+    #     return super(DailyTasks, self).save(*args, **kwargs)

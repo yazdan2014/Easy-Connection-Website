@@ -8,5 +8,7 @@ urlpatterns = [
     path("close/", views.close_task, name="oc-close"),
 
     path("admin/", views.oc_admin , name="oc-admin"),
+    path("admin/dailytasks" , views.get_dailytasks, name='get-dailytasks'),
+    path("admin/monthlygoals" , views.get_monthlygoals, name='get-monthlygoals')
 
 ]

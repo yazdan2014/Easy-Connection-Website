@@ -233,10 +233,10 @@
                             <td>
                                 <span class="role 
                                 {% if task.status == "jc" %} bg-warning
-                                {% elif task.status == "edt" %} bg-warning
                                 {% elif task.status == "cba" %}  bg-success
                                 {% elif task.status == "og" %} bg-success
                                 {% elif task.status == "done" %} bg-primary
+                                {% elif task.status == "nd" %} bg-danger
                                 {% endif %}
                                 ">{{ task.get_status_display }}</span>
                             </td>
@@ -314,7 +314,7 @@
                                     <button data-toggle="modal" data-target="#monthly_task_edit_{{ task.id }}" class="item" data-toggle="tooltip" data-placement="top" title="Edit">
                                         <i class="zmdi zmdi-edit"></i>
                                     </button>
-                                    <button onclick="window.location.href='{% url "oc-update" %}?name={{ task.goal }}&type=monthly';" class="item" data-toggle="tooltip" data-placement="top" title="Delete">
+                                    <button onclick="window.location.href='{% url "oc-update" %}?id={{ task.id }}&type=monthly';" class="item" data-toggle="tooltip" data-placement="top" title="Delete">
                                         <i class="zmdi zmdi-delete"></i>
                                     </button>
                                 </div>

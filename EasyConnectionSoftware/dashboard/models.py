@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 import json
+from OCT.models import OCT
 
 # Create your models here.
 
@@ -26,6 +27,14 @@ class User(AbstractUser):
     
     def __str__(self):
         return self.username
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            obj = super(User, self).save(*args, **kwargs)
+            if not OCT.objects.filter(user=self).exists():
+                OCT.objects.create(user=self)
+            return obj
+        return super(User, self).save(*args, **kwargs)
     
 class FormTransition(models.Model):
     # form = models.ForeignKey("UserForm", on_delete=models.CASCADE)
@@ -58,8 +67,7 @@ class UserForm(models.Model):
     def setStatus(self,status):
         self.status = status
 
-    def create(self, *args):
-        pass
+    
 
 class FormSample(models.Model):
     title = models.CharField(max_length=50)

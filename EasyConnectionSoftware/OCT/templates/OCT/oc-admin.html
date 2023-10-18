@@ -167,7 +167,7 @@
                     </thead>
                     <tbody>
                         {% for auser in users%}
-                            <tr class='clickable-row' data-toggle="modal" data-target="#{{auser.id}}" style="cursor:pointer">
+                            <tr class='clickable-row' data-toggle="modal" onClick="getThisWeek('{{auser.id}}');getMonthlyGoals('{{auser.id}}')" data-target="#{{auser.id}}" style="cursor:pointer">
                                 <td>
                                     <div class="table-data__info">
                                         <h6>{{ auser.first_name }} {{ auser.last_name }}</h6>
@@ -262,60 +262,74 @@
 {% block modal %}
     {% for auser in users %}
         <div class="modal fade"  id="{{auser.id}}" tabindex="-1" role="dialog" aria-labelledby="{{auser.id}}" aria-hidden="true">
-            <div class="modal-dialog modal-lg" style='max-width:900px;' role="document">
+            <div class="modal-dialog modal-lg" style='max-width:1300px;' role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="{{auser.id}}">Add a new Monthly Task</h5>
+                        <h5 class="modal-title" id="{{auser.id}}">{{ auser.first_name }} {{ auser.last_name }} </h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                         <div class="modal-body px-5">
+                            <div class="card-title">
+                                <h3 class="title-2">Daily Tasks</h3>
+                            </div>
                             <div class="card">
                                 <div class="card-body">
                                     <div class="custom-tab">
                                         <nav>
                                             <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                                                <a class="nav-item nav-link active" id="custom-nav-home-tab" data-toggle="tab" href="#custom-nav-home" role="tab" aria-controls="custom-nav-home"
-                                                    aria-selected="true">Saturday</a>
-                                                <a class="nav-item nav-link" id="custom-nav-profile-tab" data-toggle="tab" href="#custom-nav-profile" role="tab" aria-controls="custom-nav-profile"
-                                                    aria-selected="false">Sunday</a>
-                                                <a class="nav-item nav-link" id="custom-nav-contact-tab" data-toggle="tab" href="#custom-nav-contact" role="tab" aria-controls="custom-nav-contact"
-                                                    aria-selected="false">Monday</a>
-                                                <a class="nav-item nav-link" id="custom-nav-contact-tab" data-toggle="tab" href="#custom-nav-contact" role="tab" aria-controls="custom-nav-contact"
-                                                    aria-selected="false">Tuesday</a>
-                                                <a class="nav-item nav-link" id="custom-nav-contact-tab" data-toggle="tab" href="#custom-nav-contact" role="tab" aria-controls="custom-nav-contact"
-                                                    aria-selected="false">Wednesday</a>
-                                                <a class="nav-item nav-link" id="custom-nav-contact-tab" data-toggle="tab" href="#custom-nav-contact" role="tab" aria-controls="custom-nav-contact"
-                                                    aria-selected="false">Thursday</a>
-                                                <a class="nav-item nav-link" id="custom-nav-contact-tab" data-toggle="tab" href="#custom-nav-contact" role="tab" aria-controls="custom-nav-contact"
-                                                    aria-selected="false">Friday</a>
+                                                <a class="nav-item nav-link {% if today|date:"w" == "1"  %} active {% endif %}" id="Monday-tab" data-toggle="tab" href="#{{auser.id}}wMonday" role="tab" aria-controls="custom-nav-contact"
+                                                    aria-selected="false">Monday{% if today|date:"w" == "1"  %}<span class="badge badge-success">Today</span> {% endif %}</a>
+
+                                                <a class="nav-item nav-link {% if today|date:"w" == "2"  %} active {% endif %}" id="Tuesday-tab" data-toggle="tab" href="#{{auser.id}}wTuesday" role="tab" aria-controls="custom-nav-contact"
+                                                    aria-selected="false">Tuesday{% if today|date:"w" == "2"  %}<span class="badge badge-success">Today</span> {% endif %}</a>
+
+                                                <a class="nav-item nav-link {% if today|date:"w" == "3"  %} active {% endif %}" id="Wednesday-tab" data-toggle="tab" href="#{{auser.id}}wWednesday" role="tab" aria-controls="custom-nav-contact"
+                                                    aria-selected="false">Wednesday{% if today|date:"w" == "3"  %}<span class="badge badge-success">Today</span> {% endif %}</a>
+                                                
+                                                <a class="nav-item nav-link {% if today|date:"w" == "4"  %} active {% endif %}" id="Thursday-tab" data-toggle="tab" href="#{{auser.id}}wThursday" role="tab" aria-controls="custom-nav-contact"
+                                                    aria-selected="false">Thursday{% if today|date:"w" == "4"  %}<span class="badge badge-success">Today</span> {% endif %} </a>
+                                                 
+                                                <a class="nav-item nav-link {% if today|date:"w" == "5"  %} active {% endif %}" id="Friday-tab" data-toggle="tab" href="#{{auser.id}}wFriday" role="tab" aria-controls="custom-nav-contact"
+                                                    aria-selected="false">Friday{% if today|date:"w" == "5"  %}<span class="badge badge-success">Today</span> {% endif %}</a>
+                                                
+                                                <a class="nav-item nav-link {% if today|date:"w" == "6"  %} active {% endif %}" id="Saturday-tab" data-toggle="tab" href="#{{auser.id}}wSaturday" role="tab" aria-controls="custom-nav-home"
+                                                    aria-selected="true">Saturday{% if today|date:"w" == "6"  %}<span class="badge badge-success">Today</span> {% endif %}</a>
+
+                                                <a class="nav-item nav-link {% if today|date:"w" == "0"  %} active {% endif %}" id="Sunday-tab" data-toggle="tab" href="#{{auser.id}}wSunday" role="tab" aria-controls="custom-nav-profile"
+                                                    aria-selected="false">Sunday{% if today|date:"w" == "0"  %}<span class="badge badge-success">Today</span> {% endif %}</a>
+
+
+
                                             </div>
                                         </nav>
                                         <div class="tab-content pl-3 pt-2" id="nav-tabContent">
-                                            <div class="tab-pane fade show active" id="custom-nav-home" role="tabpanel" aria-labelledby="custom-nav-home-tab">
-                                                <p>Raw denim you probably haven't heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua, retro synth
-                                                    master cleanse. Mustache cliche tempor, williamsburg carles vegan helvetica. Reprehenderit butcher retro keffiyeh
-                                                    dreamcatcher synth. Cosby sweater eu banh mi, irure terry richardson ex sd. Alip placeat salvia cillum iphone.
-                                                    Seitan alip s cardigan american apparel, butcher voluptate nisi .</p>
+                                            <div class="tab-pane fade {% if today|date:"w" == "1"  %} show active {% endif %} " id="{{auser.id}}wMonday" role="tabpanel" aria-labelledby="">
                                             </div>
-                                            <div class="tab-pane fade" id="custom-nav-profile" role="tabpanel" aria-labelledby="custom-nav-profile-tab">
-                                                <p>Raw denim you probably haven't heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua, retro synth
-                                                    master cleanse. Mustache cliche tempor, williamsburg carles vegan helvetica. Reprehenderit butcher retro keffiyeh
-                                                    dreamcatcher synth. Cosby sweater eu banh mi, irure terry richardson ex sd. Alip placeat salvia cillum iphone.
-                                                    Seitan alip s cardigan american apparel, butcher voluptate nisi .</p>
+                                            <div class="tab-pane fade {% if today|date:"w" == "2"  %} show active {% endif %}" id="{{auser.id}}wTuesday" role="tabpanel" aria-labelledby="">
                                             </div>
-                                            <div class="tab-pane fade" id="custom-nav-contact" role="tabpanel" aria-labelledby="custom-nav-contact-tab">
-                                                <p>Raw denim you probably haven't heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua, retro synth
-                                                    master cleanse. Mustache cliche tempor, williamsburg carles vegan helvetica. Reprehenderit butcher retro keffiyeh
-                                                    dreamcatcher synth. Cosby sweater eu banh mi, irure terry richardson ex sd. Alip placeat salvia cillum iphone.
-                                                    Seitan alip s cardigan american apparel, butcher voluptate nisi .</p>
+                                            <div class="tab-pane fade {% if today|date:"w" == "3"  %} show active {% endif %} " id="{{auser.id}}wWednesday" role="tabpanel" aria-labelledby="">
+                                            </div>
+                                            <div class="tab-pane fade {% if today|date:"w" == "4"  %} show active {% endif %}" id="{{auser.id}}wThursday" role="tabpanel" aria-labelledby="">
+                                            </div>
+                                            <div class="tab-pane fade {% if today|date:"w" == "5"  %} show active {% endif %}" id="{{auser.id}}wFriday" role="tabpanel" aria-labelledby="">
+                                            </div>
+                                            <div class="tab-pane fade {% if today|date:"w" == "6"  %} show active {% endif %}" id="{{auser.id}}wSaturday" role="tabpanel" aria-labelledby="">
+                                            </div>
+                                            <div class="tab-pane fade {% if today|date:"w" == "0"  %} show active {% endif %}" id="{{auser.id}}wSunday" role="tabpanel" aria-labelledby="">
                                             </div>
                                         </div>
 
                                     </div>
                                 </div>
                             </div>
+                            <hr>
+                            <div class="card-title">
+                                <h3 class="title-2">Monthly Goals</h3>
+                            </div>
+                            <span id="m{{auser.id}}">
+                            </span>
                         </div>
                         <div class="modal-footer">
                         </div>
@@ -328,5 +342,133 @@
 
 {% block script %}
 <script>
+
+function getThisWeek(user_id){
+    $.ajax({
+        url: "{% url 'get-dailytasks' %}",
+        type: 'GET',
+        data: "uid="+user_id+"&week=0",
+        dataType: 'json', // added data type
+        success: function(res) {
+            //console.log(res)
+            for (const [day, tasks] of Object.entries(res)) {
+                if (tasks.length == 0){
+                    $(`#${user_id}w${day}`).html("No Task Found !")
+                    continue
+                }
+                final_html = `
+                <div class="table-responsive table-responsive-data2">
+                    <table class="table table-data2">
+                        <thead>
+                            <tr>
+                                <th>topic</th>
+                                <th>estimated time</th>
+                                <th>status</th>
+                                <th>related goal</th>
+                                <th>created at</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `
+                for(const task of tasks){
+                    final_html += `
+                    <tr class="tr-shadow">
+                        <td>${ task.topic }</td>
+                        <td>${ task.estimated_time }</td>
+                        <td>
+                            <span class="role bg-primary">${ task.status }</span>
+                        </td>
+                        <td>
+                            <span class="text-primary">${ task.goal }</span>
+                        </td>
+                        <td>${ task.ca_time }</td>
+                        <td>
+                            <div class="table-data-feature">
+                                <button data-toggle="modal" data-target="#daily_task_edit_{{ task.id }}" class="item" data-toggle="tooltip" data-placement="top" title="Edit">
+                                    <i class="zmdi zmdi-edit"></i>
+                                </button>
+                                <button class="item" data-toggle="modal" data-target="#daily_task_delete_{{ task.id }}" title="Delete Task" data-toggle="tooltip" data-placement="top" title="Delete Task">
+                                    <i class="zmdi zmdi-delete"></i>
+                                </button>
+                                <button  data-toggle="modal" data-target="#daily_task_close_{{ task.id }}" class="item" data-placement="top" title="Close Task">
+                                    <i class="zmdi zmdi-comment" ></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="spacer"></tr>
+                    `
+                }
+                final_html += `</tbody>
+                </table>
+                </div>`
+
+                $(`#${user_id}w${day}`).html(final_html)
+            }
+        }
+    });
+}
+
+function getMonthlyGoals(user_id){
+    $.ajax({
+        url: "{% url 'get-monthlygoals' %}",
+        type: 'GET',
+        data: "uid="+user_id+"&week=0",
+        dataType: 'json', // added data type
+        success: function(res) {
+            console.log(res)
+            for (const [day, tasks] of Object.entries(res)) {
+                if (tasks.length == 0){
+                    $(`#${user_id}w${day}`).html("No Task Found !")
+                    continue
+                }
+                final_html = `
+                <div class="table-responsive table-responsive-data2">
+                    <table class="table table-data2">
+                        <thead>
+                            <tr>
+                                <th>goal</th>
+                                <th>progress</th>
+                                <th>description</th>
+                                <th>created date</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `
+                for(const task of tasks){
+                    final_html += `
+                    <tr class="tr-shadow">
+                        <td>${task.goal}</td>
+                        <td class="text-info">
+                            ${task.progress_percentage}
+                        </td>
+                        <td >${task.description}</td>
+
+                        <td >${task.created_at}</td>
+
+                        <td>
+                            <div class="table-data-feature">
+                                <button data-toggle="modal" data-target="#monthly_task_edit_9" class="item" data-toggle="tooltip" data-placement="top" title="Edit">
+                                    <i class="zmdi zmdi-edit"></i>
+                                </button>
+                                <button onclick="window.location.href='/dashboard/oct/update/?id=9&type=monthly';" class="item" data-toggle="tooltip" data-placement="top" title="Delete">
+                                    <i class="zmdi zmdi-delete"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="spacer"></tr>
+                    `
+                }
+                final_html += `</tbody>
+                </table>
+                </div>`
+
+                $(`#m${user_id}`).html(final_html)
+            }
+        }
+    });
+}
 </script>
 {% endblock script %}
