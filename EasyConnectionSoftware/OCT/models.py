@@ -32,11 +32,11 @@ class DailyTasks(models.Model):
     goal_related_to = models.ForeignKey('MonthlyTasks',related_name='goal_related_to',on_delete=models.CASCADE, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     admin_comment = models.CharField(max_length=150, null=True,blank=True)
-    
+    checked_by_admin = models.BooleanField(default=False)
+
     STATUS_CHOICES = (
         ('jc','Just Created'),
         ('og','On Going'),
-        ('cba','Checked By Admin'),
         ('edt', 'Edited'),
         ('done', 'Done'),
         ('nd','Not Done')

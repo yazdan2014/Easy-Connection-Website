@@ -136,11 +136,12 @@ def get_dailytasks(request):
             "goal":res.goal_related_to.goal if res.goal_related_to else 'None',
             "estimated_time":res.estimated_time,
             "actual_time":res.actual_time,
+            'checked_by_admin':res.checked_by_admin,
             "admin_comment":res.admin_comment,
-            'ca_time':res.created_at.time(),
+            'ca_time':res.created_at.strftime("%H:%M:%S"),
             'ca_weekday':res.created_at.weekday(),
             'ca_weekdaystr':res.created_at.strftime("%A"),
-            'ca_date':res.created_at.date()
+            'ca_date':res.created_at.date(),
         }
         final_res[res.created_at.strftime("%A")].append(serializer)
 
@@ -155,3 +156,18 @@ def get_monthlygoals(request):
     print(this_month)
     res_raw = list(OCT.objects.filter(user=request.GET['uid']).first().monthly_tasks.filter(created_at__month=this_month).values())
     return JsonResponse({'data':res_raw})
+
+def check_task(request):
+    if not request.user.is_authenticated:
+        return redirect("login")
+
+    OCT.objects.filter(user=request.user).first().daily_tasks.filter(pk=request.GET['tid']).update(checked_by_admin=True)
+    return JsonResponse({'data':"Successful"})
+
+
+def comment_task(request):
+    if not request.user.is_authenticated:
+        return redirect("login")
+    print(request.GET)
+    OCT.objects.filter(user=request.user).first().daily_tasks.filter(pk=request.GET['tid']).update(admin_comment=f"{request.user.username}: {request.GET('cmt')}")
+    return JsonResponse({'data':"Successful"})

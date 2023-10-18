@@ -223,6 +223,9 @@
                             <th>status</th>
                             <th>related goal</th>
                             <th>created at</th>
+                            <th>admin</th>
+                            <th></th>
+                            
                         </tr>
                     </thead>
                     <tbody>
@@ -231,31 +234,59 @@
                             <td>{{ task.topic }}</td>
                             <td>{{ task.estimated_time }}</td>
                             <td>
-                                <span class="role 
+                                <span class="role position-relative
                                 {% if task.status == "jc" %} bg-warning
                                 {% elif task.status == "cba" %}  bg-success
                                 {% elif task.status == "og" %} bg-success
                                 {% elif task.status == "done" %} bg-primary
                                 {% elif task.status == "nd" %} bg-danger
                                 {% endif %}
-                                ">{{ task.get_status_display }}</span>
+                                ">
+                                    {{ task.get_status_display }}
+                                </span>
                             </td>
                             <td>
                                 <span class="text-primary">{{ task.goal_related_to }}</span>
                             </td>
                             <td>{{ task.created_at.time }}</td>
                             <td>
+                                {% if task.checked_by_admin %}
+                                    <span class="badge badge-success">Checked</span>
+                                    {% if task.admin_comment %}
+                                    <div class="account-wrap float-right">
+                                        <div class="account-item clearfix js-item-menu">
+                                            <div class="">
+                                                <a class="js-acc-btn" href="#">
+                                                    <span class="badge badge-pill badge-primary"> 
+                                                        Comment
+                                                        <i class=" fa fa-comment text-white" ></i> 
+                                                    </span>
+                                                </a>
+                                            </div>
+                                            <div class="account-dropdown js-dropdown">
+                                                <div class="info clearfix">
+                                                    {{ task.admin_comment }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="badge badge-danger">Not Checked</span>
+                                {% endif %}
+                            </td>
+                            <td>
                                 <div class="table-data-feature">
                                     {% if task.status != 'done' %} 
-                                    <button data-toggle="modal" data-target="#daily_task_edit_{{ task.id }}" class="item" data-toggle="tooltip" data-placement="top" title="Edit">
-                                        <i class="zmdi zmdi-edit"></i>
-                                    </button>
-                                    <button class="item" data-toggle="modal" data-target="#daily_task_delete_{{ task.id }}" title="Delete Task" data-toggle="tooltip" data-placement="top" title="Delete Task">
-                                        <i class="zmdi zmdi-delete"></i>
-                                    </button>
-                                    <button  data-toggle="modal" data-target="#daily_task_close_{{ task.id }}" class="item" data-placement="top" title="Close Task">
-                                        <i class="zmdi zmdi-check" ></i>
-                                    </button>
+                                        <button data-toggle="modal" data-target="#daily_task_edit_{{ task.id }}" class="item" data-toggle="tooltip" data-placement="top" title="Edit">
+                                            <i class="zmdi zmdi-edit"></i>
+                                        </button>
+                                        <button class="item" data-toggle="modal" data-target="#daily_task_delete_{{ task.id }}" title="Delete Task" data-toggle="tooltip" data-placement="top" title="Delete Task">
+                                            <i class="zmdi zmdi-delete"></i>
+                                        </button>
+                                        <button  data-toggle="modal" data-target="#daily_task_close_{{ task.id }}" class="item" data-placement="top" title="Close Task">
+                                            <i class="zmdi zmdi-check" ></i>
+                                        </button>
                                     {% endif %}
                                 </div>
                             </td>

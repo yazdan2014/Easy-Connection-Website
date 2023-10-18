@@ -9,6 +9,9 @@ urlpatterns = [
 
     path("admin/", views.oc_admin , name="oc-admin"),
     path("admin/dailytasks" , views.get_dailytasks, name='get-dailytasks'),
-    path("admin/monthlygoals" , views.get_monthlygoals, name='get-monthlygoals')
+    path("admin/monthlygoals" , views.get_monthlygoals, name='get-monthlygoals'),
+    
+    path("admin/checktask" , views.check_task, name='checktask'),
+    path("admin/commenttask" , views.comment_task, name='commenttask'),
 
 ]
