@@ -527,7 +527,11 @@ function getMonthlyGoals(user_id){
 
 function commentSetup(tid, comment){
     $("#tid").val(tid)
-    $("#acomment").val(comment)
+    if(comment){
+        $("#acomment").val(comment)
+    }else{
+        $("#acomment").val("")
+    }
 }
 
 function commentTask(){

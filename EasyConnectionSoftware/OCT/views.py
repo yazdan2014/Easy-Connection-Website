@@ -168,6 +168,8 @@ def check_task(request):
 def comment_task(request):
     if not request.user.is_authenticated:
         return redirect("login")
-    print(request.GET)
-    OCT.objects.filter(user=request.user).first().daily_tasks.filter(pk=request.GET['tid']).update(admin_comment=f"{request.user.username}: {request.GET('cmt')}")
+    if request.GET.get('cmt'):
+        OCT.objects.filter(user=request.user).first().daily_tasks.filter(pk=request.GET['tid']).update(admin_comment=f"{request.GET.get('cmt')}")
+    else :
+        OCT.objects.filter(user=request.user).first().daily_tasks.filter(pk=request.GET['tid']).update(admin_comment="")
     return JsonResponse({'data':"Successful"})
