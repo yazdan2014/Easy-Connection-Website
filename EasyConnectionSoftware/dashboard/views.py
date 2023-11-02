@@ -1,10 +1,10 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponseBadRequest
+from django.http import HttpResponseBadRequest, HttpResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
 from .forms import SignupUserForm
-from .models import UserForm,FormSample
+from .models import UserForm,FormSample,ROLES,FormTransition
 import json
 
 
@@ -71,23 +71,55 @@ def dashboard_new_form(request,form_title):
     if not request.user.is_authenticated:
         return redirect("login")
     
-    if request.method == "POST":
-        pass
-    
     form_sample = FormSample.objects.filter(title=form_title).first()
+
+    if request.method == "POST":
+        finaldict = {}
+        for key, value in dict(request.POST).items():
+            if key == "csrfmiddlewaretoken":
+                continue
+            finaldict[key] = value
+
+        
+        
+
+        userform = UserForm.objects.create(created_by=request.user,sample=form_sample,descrition='',fields=finaldict)
+
+        tranisitions = []
+        print(form_sample.transitions)
+        for trn in form_sample.transitions:
+            tranisitions.append(FormTransition.objects.create(form=userform,receivers_role=trn))
+
+        for prev, current, nxt in zip(tranisitions, tranisitions[1:], tranisitions[2:]):
+            if not nxt:
+                break
+            current.next_transition = nxt
+            current.save()
+
+        userform.current_transition = tranisitions[0]
+        userform.save()
+
+        # print(finaldict)
+        return redirect("forms")
+
+    
+    
     for field in form_sample.fields:
         if field["field_type"] == 'radio' or field["field_type"] == 'checkbox':
             field['extra_details'] = field['extra_details'].split('\n')
     print(form_sample.fields)
     return render(request, 'dashboard/newform.html',{'page':'forms-admin','form_title':form_sample.title,'form_description':form_sample.description,"fields":form_sample.fields})
-
+    
 
 
 
 def new_form_admin(request):
     if not request.user.is_authenticated:
         return redirect("login")
-    return render(request, 'dashboard/newform-admin.html',{'page':'forms-admin'})
+    ROLES_filtered = []
+    for r1, r2 in ROLES:
+        ROLES_filtered.append(r1)
+    return render(request, 'dashboard/newform-admin.html',{'page':'forms-admin','roles':ROLES_filtered})
 
 def dashboard_forms_admin(request):
     if not request.user.is_authenticated:
@@ -95,18 +127,15 @@ def dashboard_forms_admin(request):
     if request.method == "POST":
         if (not request.POST["fields"]) or  (not request.POST["title"]) or (not request.POST["description"]):
             return HttpResponseBadRequest("One or more fields are not filled")
-            
+
+
         fields = json.loads(request.POST["fields"])
-        FormSample.objects.create(fields=fields,description=request.POST["description"],title=request.POST["title"])
-        print(fields)
+        smaple = FormSample.objects.create(fields=fields,description=request.POST["description"],title=request.POST["title"],transitions=request.POST['trns'])
+        
+
+
         return redirect("forms-admin")
     
     if request.method == "GET":
         all_sample_forms = list(FormSample.objects.all())
         return render(request, 'dashboard/forms-admin.html',{'page':'forms-admin',"formsamples":all_sample_forms})
-    
-
-
-
-
-

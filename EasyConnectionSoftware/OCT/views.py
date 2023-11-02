@@ -90,6 +90,7 @@ def oc_admin(request):
     if not request.user.is_authenticated:
         return redirect("login")
 
+    
     users = list(User.objects.all())
     users_serialzed = []
     for user in users:
@@ -161,15 +162,27 @@ def check_task(request):
     if not request.user.is_authenticated:
         return redirect("login")
 
-    OCT.objects.filter(user=request.user).first().daily_tasks.filter(pk=request.GET['tid']).update(checked_by_admin=True)
+    if request.GET['monthly']:
+        MonthlyTasks.objects.filter(pk=request.GET['tid']).update(checked_by_admin=True)
+    else:
+        DailyTasks.objects.daily_tasks.filter(pk=request.GET['tid']).update(checked_by_admin=True)
     return JsonResponse({'data':"Successful"})
 
 
 def comment_task(request):
     if not request.user.is_authenticated:
         return redirect("login")
-    if request.GET.get('cmt'):
-        OCT.objects.filter(user=request.user).first().daily_tasks.filter(pk=request.GET['tid']).update(admin_comment=f"{request.GET.get('cmt')}")
-    else :
-        OCT.objects.filter(user=request.user).first().daily_tasks.filter(pk=request.GET['tid']).update(admin_comment="")
+    print(request.GET)
+    if request.GET.get('type') == 'monthly':
+        if request.GET.get('cmt'):
+            OCT.objects.filter(user=request.user).first().monthly_tasks.filter(pk=request.GET['tid']).update(admin_comment=f"{request.GET.get('cmt')}")
+        else :
+            OCT.objects.filter(user=request.user).first().monthly_tasks.filter(pk=request.GET['tid']).update(admin_comment="")
+
+    else:
+        if request.GET.get('cmt'):
+            OCT.objects.filter(user=request.user).first().daily_tasks.filter(pk=request.GET['tid']).update(admin_comment=f"{request.GET.get('cmt')}")
+        else :
+            OCT.objects.filter(user=request.user).first().daily_tasks.filter(pk=request.GET['tid']).update(admin_comment="")
+
     return JsonResponse({'data':"Successful"})

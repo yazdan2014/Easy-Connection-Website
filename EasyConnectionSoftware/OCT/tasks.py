@@ -12,7 +12,8 @@ def og_status(task_id):
 @shared_task
 def daily_tasks_handle():
     for dt in DailyTasks.objects.all():
-        if dt.status is not 'done':
+        if dt.status != 'done':
             dt.status= 'nd'
             dt.save()
+        
 

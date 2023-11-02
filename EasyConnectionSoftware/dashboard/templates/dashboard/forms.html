@@ -55,16 +55,16 @@
                     </thead>
                     <tbody>
                     {% for user_form in user_forms %}
-                        <tr>
+                        <tr class='clickable-row' data-toggle="modal" onClick="" data-target="#{{user_form.id}}" style="cursor:pointer">
                             <td>{{ user_form.created_by }}</td>
-                            <td>{{ user_form.form_id }} </td>
-                            <td >{{ user_form.title }} </td>
+                            <td>{{ user_form.id }} </td>
+                            <td>{{ user_form.title }} </td>
                             <td>{{ user_form.date }} </td>
                             <td  class="process">{{ user_form.status }} </td>
                             <td>{{ user_form.current_receiver }} </td>
                         </tr>
                     {% endfor %}
-                        <tr>
+                        <tr class='clickable-row' data-toggle="modal" onClick=")" data-target="#{{auser.id}}" style="cursor:pointer">
                             <td>2018-09-22 00:43</td>
                             <td>Computer</td>
                             <td>Macbook Pro Retina 2017</td>
@@ -106,7 +106,29 @@
         </div>
     </div>
 <!-- end modal medium -->
+{% for user_form in user_forms %}
+<div class="modal fade"  id="{{user_form.id}}" tabindex="-1" role="dialog" aria-labelledby="{{user_form.id}}" aria-hidden="true">
+    <div class="modal-dialog modal-lg" style='max-width:1000px;' role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ user_form.sample.title }}  </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+                <div class="modal-body ">
+                    
+                </div>
+                <div class="modal-footer">
+                </div>
+        </div>
+    </div>
+</div>
+
+{% endfor %}
+
 {% endblock modal %}
+
 
 
 {% block script %}

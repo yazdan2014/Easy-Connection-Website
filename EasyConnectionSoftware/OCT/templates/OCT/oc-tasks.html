@@ -326,6 +326,7 @@
                         <th>progress</th>
                         <th>description</th>
                         <th>created date</th>
+                        <th>Admin</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -339,7 +340,32 @@
                             <td >{{ task.description }}</td>
 
                             <td >{{ task.created_at.date }}</td>
-
+                            <td>
+                                {% if task.checked_by_admin %}
+                                    <span class="badge badge-success">Checked</span>
+                                    {% if task.admin_comment %}
+                                    <div class="account-wrap float-right">
+                                        <div class="account-item clearfix js-item-menu">
+                                            <div class="">
+                                                <a class="js-acc-btn" href="#">
+                                                    <span class="badge badge-pill badge-primary"> 
+                                                        Comment
+                                                        <i class=" fa fa-comment text-white" ></i> 
+                                                    </span>
+                                                </a>
+                                            </div>
+                                            <div class="account-dropdown js-dropdown">
+                                                <div class="info clearfix">
+                                                    {{ task.admin_comment }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="badge badge-danger">Not Checked</span>
+                                {% endif %}
+                            </td>
                             <td>
                                 <div class="table-data-feature">
                                     <button data-toggle="modal" data-target="#monthly_task_edit_{{ task.id }}" class="item" data-toggle="tooltip" data-placement="top" title="Edit">

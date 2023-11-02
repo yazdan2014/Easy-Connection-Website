@@ -85,7 +85,7 @@
         </div>
     </div>
 </div> {% endcomment %}
-</br>
+{% comment %} </br>
 <div class="row">
     <div class="col-lg-6">
         <div class="au-card recent-report">
@@ -147,7 +147,7 @@
             </div>
         </div>
     </div>
-</div>
+</div> {% endcomment %}
 
 <div class="row">
     <div class="col-lg-12">
@@ -356,6 +356,7 @@
                 <div class="modal-body px-5">
                         
                         <input type="hidden" hidden name='tid' id='tid' value="">
+                        <input type="hidden" hidden name='type' id='type' value="">
                         <div class="row form-group">
                             <div class="col col-md-3">
                                 <label for="text-input" class=" form-control-label">Add Comment</label>
@@ -420,6 +421,7 @@ function getThisWeek(user_id){
                             <tr>
                                 <th>topic</th>
                                 <th>estimated time</th>
+                                <th>actual time</th>
                                 <th>status</th>
                                 <th>related goal</th>
                                 <th>created at</th>
@@ -432,6 +434,7 @@ function getThisWeek(user_id){
                     <tr class="tr-shadow">
                         <td>${ task.topic }</td>
                         <td>${ task.estimated_time }</td>
+                        <td>${ task.actual_time ? task.actual_time: "Not Done Yet" }</td>
                         <td>
                             <span class="role bg-info">${ task.status }</span>
                         </td>
@@ -441,10 +444,10 @@ function getThisWeek(user_id){
                         <td>${ task.ca_time }</td>
                         <td>
                             <div class="table-data-feature">
-                                <button class="item bg-success check-task" data-toggle="modal" onClick='checkTask("${ task.id }")' title="Check Task" data-toggle="tooltip" data-placement="top" title="Delete Task" ${ task.checked_by_admin ? 'hidden':''}>
+                                <button class="item bg-success check-task" data-toggle="modal" onClick='checkTask("${ task.id }")' title="Check Task" data-toggle="tooltip" data-placement="top" title="Delete Task"  ${ task.checked_by_admin ? 'hidden':''} > 
                                     <i class="zmdi zmdi-check text-white"></i>
                                 </button>
-                                <button class="item bg-primary" data-toggle="modal" onClick='commentSetup("${ task.id }","${ task.admin_comment }")' data-target="#admincomment" class="item" data-placement="top" title="Add Comment">
+                                <button class="item bg-primary" data-toggle="modal" onClick='commentSetup("${ task.id }","${ task.admin_comment }","daily")' data-target="#admincomment" class="item" data-placement="top" title="Add Comment">
                                     <i class="zmdi zmdi-comment text-white" ></i>
                                 </button>
                             </div>
@@ -503,11 +506,11 @@ function getMonthlyGoals(user_id){
 
                         <td>
                             <div class="table-data-feature">
-                                <button data-toggle="modal" data-target="#monthly_task_edit_9"  class="item" data-toggle="tooltip" data-placement="top" title="Edit">
-                                    <i class="zmdi zmdi-edit"></i>
+                                <button class="item bg-success check-task" data-toggle="modal" onClick='checkMTask("${ task.id }")' title="Check Task" data-toggle="tooltip" data-placement="top" title="Delete Task"  ${ task.checked_by_admin ? 'hidden':''} > 
+                                    <i class="zmdi zmdi-check text-white"></i>
                                 </button>
-                                <button class="item" data-toggle="tooltip" data-placement="top" title="Delete">
-                                    <i class="zmdi zmdi-delete"></i>
+                                <button class="item bg-primary" data-toggle="modal" onClick='commentSetup("${ task.id }","${ task.admin_comment }","monthly")' data-target="#admincomment" class="item" data-placement="top" title="Add Comment">
+                                    <i class="zmdi zmdi-comment text-white" ></i>
                                 </button>
                             </div>
                         </td>
@@ -525,9 +528,11 @@ function getMonthlyGoals(user_id){
     });
 }
 
-function commentSetup(tid, comment){
+function commentSetup(tid, comment,type){
+    console.log(tid, comment,type)
+    $("#type").val(type)
     $("#tid").val(tid)
-    if(comment){
+    if(comment != "null"){
         $("#acomment").val(comment)
     }else{
         $("#acomment").val("")
@@ -538,7 +543,7 @@ function commentTask(){
     $.ajax({
         url: "{% url 'commenttask' %}",
         type: 'GET',
-        data: "tid="+$("#tid").val() +'&cmt='+ $("#acomment").val(),
+        data: "tid="+$("#tid").val() +'&cmt='+ $("#acomment").val() + "&type=" +  $("#type").val(),
         dataType: 'json', // added data type
         success: function(res) {
             console.log(res)
@@ -552,7 +557,7 @@ function checkTask(tid){
     $.ajax({
         url: "{% url 'checktask' %}",
         type: 'GET',
-        data: "tid="+tid,
+        data: "tid="+tid+'&daily=1',
         dataType: 'json', // added data type
         success: function(res) {
             console.log(res)
@@ -560,5 +565,22 @@ function checkTask(tid){
     });
 }
 
+function checkMTask(tid){
+    $.ajax({
+        url: "{% url 'checktask' %}",
+        type: 'GET',
+        data: "tid="+tid+'&monthly=1',
+        dataType: 'json', // added data type
+        success: function(res) {
+            console.log(res)
+        }
+    });
+}
+
+$(document).on('click','.check-task',function(){
+
+    $(this).hide(100)
+
+});
 </script>
 {% endblock script %}

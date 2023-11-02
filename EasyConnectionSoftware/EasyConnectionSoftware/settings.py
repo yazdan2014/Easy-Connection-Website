@@ -152,6 +152,6 @@ USE_TZ = False
 CELERY_BEAT_SCHEDULE = {
     'Daily Tasks Handle': {
         'task': 'OCT.tasks.daily_tasks_handle',
-        'schedule': crontab(minute=8,hour=13)
+        'schedule': crontab(minute=59,hour=23)
     },
 }

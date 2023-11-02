@@ -14,6 +14,8 @@ class MonthlyTasks(models.Model):
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     admin_comment = models.CharField(max_length=150, null=True,blank=True)
+    checked_by_admin = models.BooleanField(default=False)
+
 
     STATUS_CHOICES = (
         ('og','On Going'),
@@ -29,7 +31,7 @@ class DailyTasks(models.Model):
     topic = models.CharField(max_length=150)
     estimated_time = models.CharField(max_length=150)
     actual_time = models.CharField(max_length=150, null=True,blank=True)
-    goal_related_to = models.ForeignKey('MonthlyTasks',related_name='goal_related_to',on_delete=models.CASCADE, blank=True, null=True)
+    goal_related_to = models.ForeignKey('MonthlyTasks',related_name='goal_related_to',on_delete=models.SET_NULL, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     admin_comment = models.CharField(max_length=150, null=True,blank=True)
     checked_by_admin = models.BooleanField(default=False)
