@@ -64,6 +64,8 @@ def dashboard_forms(request):
     all_sample_forms = list(FormSample.objects.all())
     user_forms = UserForm.objects.filter(created_by=request.user)
 
+    for form in user_forms:
+        form.sample.transitions = json.loads(form.sample.transitions)
 
     return render(request, 'dashboard/forms.html',{'page':'forms','user_forms':user_forms, 'form_samples':all_sample_forms})
 
@@ -80,23 +82,26 @@ def dashboard_new_form(request,form_title):
                 continue
             finaldict[key] = value
 
-        
-        
-
         userform = UserForm.objects.create(created_by=request.user,sample=form_sample,descrition='',fields=finaldict)
 
-        tranisitions = []
-        print(form_sample.transitions)
-        for trn in form_sample.transitions:
-            tranisitions.append(FormTransition.objects.create(form=userform,receivers_role=trn))
-
+        tranisitions = [None,]
+        print(json.loads(form_sample.transitions))
+        for trn in json.loads(form_sample.transitions):
+            tranisition = FormTransition.objects.create(form=userform,receivers_role=trn)
+            tranisitions.append(tranisition)
+            userform.all_transitions.add(tranisition)
+            print(trn)
+        tranisitions.append(None)
+        
         for prev, current, nxt in zip(tranisitions, tranisitions[1:], tranisitions[2:]):
+            print(current)
             if not nxt:
                 break
+            current.prev_transition = prev
             current.next_transition = nxt
             current.save()
 
-        userform.current_transition = tranisitions[0]
+        userform.current_transition = tranisitions[1]
         userform.save()
 
         # print(finaldict)
@@ -107,7 +112,6 @@ def dashboard_new_form(request,form_title):
     for field in form_sample.fields:
         if field["field_type"] == 'radio' or field["field_type"] == 'checkbox':
             field['extra_details'] = field['extra_details'].split('\n')
-    print(form_sample.fields)
     return render(request, 'dashboard/newform.html',{'page':'forms-admin','form_title':form_sample.title,'form_description':form_sample.description,"fields":form_sample.fields})
     
 
@@ -130,12 +134,47 @@ def dashboard_forms_admin(request):
 
 
         fields = json.loads(request.POST["fields"])
-        smaple = FormSample.objects.create(fields=fields,description=request.POST["description"],title=request.POST["title"],transitions=request.POST['trns'])
-        
-
+        sample = FormSample.objects.create(fields=fields,description=request.POST["description"],title=request.POST["title"],transitions=request.POST['trns'])
 
         return redirect("forms-admin")
     
     if request.method == "GET":
         all_sample_forms = list(FormSample.objects.all())
         return render(request, 'dashboard/forms-admin.html',{'page':'forms-admin',"formsamples":all_sample_forms})
+    
+
+def dashboard_form_inbox(request):
+    if not request.user.is_authenticated:
+        return redirect("login")
+
+    if request.method == "POST":
+        transition = UserForm.objects.get(pk=request.POST['formid']).current_transition
+        if request.POST['comment']:
+            transition.comment=request.POST['comment']
+            
+        print(request.POST)
+        if request.POST['action'] == 'accept':
+            transition.status = 'ac'
+            transition.save()
+            UserForm.objects.filter(pk=request.POST['formid']).update(current_transition=transition.next_transition) 
+            if not transition.next_transition:
+                UserForm.status = 'Finished'
+
+        elif request.POST['action'] == 'sendback':
+            if not transition.prev_transition:
+                return HttpResponseBadRequest()
+            transition.status = 'sb'
+            transition.save()
+            UserForm.objects.filter(pk=request.POST['formid']).update(current_transition=transition.prev_transition) 
+
+        elif request.POST['action'] == 'decline':
+            pass
+        elif request.POST['action'] == 'edit':
+            pass
+
+        return redirect("forms-inbox")
+
+    forms_inbox = UserForm.objects.filter(current_transition__receivers_role = request.user.role)
+    for form in forms_inbox:
+        form.fields = form.fields
+    return render(request, 'dashboard/forms-inbox.html',{"forms_inbox":forms_inbox,'page':'forms-inbox'})

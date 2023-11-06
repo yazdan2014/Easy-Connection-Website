@@ -4660,7 +4660,7 @@ section {
 }
 
 .status--process {
-    color: #00ad5f;
+    color: #3228e8;
 }
 
 .status--denied {
@@ -4729,7 +4729,7 @@ section {
 }
 
 .table-data3 tbody td.process {
-    color: #00ad5f;
+    color: #48b5ec;
 }
 
 .table-data3 tbody td.denied {

@@ -56,12 +56,20 @@ class FormTransition(models.Model):
     # receiver_user = models.ForeignKey("User", related_name='receiver' , on_delete=models.CASCADE , null=True)
     receivers_role = models.CharField(max_length=150, choices=ROLES,null=True)
 
-    next_transition = models.ForeignKey('self',on_delete=models.CASCADE , null=True)
+    next_transition = models.ForeignKey('self', related_name='next', on_delete=models.CASCADE , null=True)
+    prev_transition = models.ForeignKey('self', related_name='prev', on_delete=models.CASCADE , null=True)
 
     sender_user = models.ForeignKey("User", related_name='sender' , on_delete=models.CASCADE, null=True)
 
+    STATUS_CHOICES = (
+        ('edit','Must Be Edited'),
+        ('sb','Sent Back'),
+        ('ac', 'Accepted'),
+        ('dc','Declined')
+    )
+    status = models.CharField(max_length=150,choices=STATUS_CHOICES,default='og')
     date = models.DateTimeField(auto_now_add=True)
-    message = models.TextField()
+    comment = models.TextField()
 
     # def save(self, *args, **kwargs):
     #     if not self.pk and not self.receiver_role:
@@ -70,6 +78,9 @@ class FormTransition(models.Model):
     #         obj = super(FormTransition, self).save(*args, **kwargs)
     #         return obj
     #     return super(FormTransition, self).save(*args, **kwargs)
+    def __str__(self):
+        return str(self.form.id) +"| " + self.receivers_role + ( " ->" +self.next_transition.receivers_role if self.next_transition else "")
+
 
 
 class UserForm(models.Model):
@@ -80,11 +91,13 @@ class UserForm(models.Model):
     date = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=50)
 
-    current_receiver = models.ForeignKey("User", related_name='current_receiver', on_delete=models.SET_NULL,blank=True, null=True)
+    # current_receiver = models.ForeignKey("User", related_name='current_receiver', on_delete=models.SET_NULL,blank=True, null=True)
 
     fields = models.JSONField(null=True) # Type: Value
 
     current_transition = models.OneToOneField(FormTransition, on_delete=models.CASCADE,null=True)
+    all_transitions = models.ManyToManyField(FormTransition,related_name ="all_transitions")
+
     
     def __str__(self):
         return self.created_by.username + "/" + self.title

@@ -1,0 +1,200 @@
+{% extends 'dashboard/base.html' %}
+
+{% block link %}
+{% endblock link %}
+
+{% block content %}
+
+    <div class="row m-t-30">
+        <div class="col-md-12">
+            <h3 class="title-5 m-b-35">Forms Table</h3>
+            <div class="table-data__tool">
+                <div class="table-data__tool-left">
+                    <div class="rs-select2--light rs-select2--md">
+                        <select class="js-select2" name="property">
+                            <option selected="selected">All Properties</option>
+                            <option value="">Option 1</option>
+                            <option value="">Option 2</option>
+                        </select>
+                        <div class="dropDownSelect2"></div>
+                    </div>
+                    {% comment %} <div class="rs-select2--light rs-select2--sm">
+                        <select class="js-select2" name="time">
+                            <option selected="selected">Today</option>
+                            <option value="">3 Days</option>
+                            <option value="">1 Week</option>
+                        </select>
+                        <div class="dropDownSelect2"></div>
+                    </div> {% endcomment %}
+                    {% comment %} <button class="au-btn-filter">
+                        <i class="zmdi zmdi-filter-list"></i>filters</button> {% endcomment %}
+                </div>
+                <div class="table-data__tool-right">
+                    <button  type="button" data-toggle="modal" data-target="#mediumModal" class="au-btn au-btn-icon au-btn--green au-btn--small">
+                        <i class="zmdi zmdi-plus" ></i>add form</button>
+                    <div class="rs-select2--dark rs-select2--sm rs-select2--dark2">
+                        <select class="js-select2" name="type">
+                            <option selected="selected">Export</option>
+                        </select>
+                        <div class="dropDownSelect2"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- DATA TABLE-->
+            <div class="table-responsive m-b-40">
+                <table class="table table-borderless table-data3">
+                    <thead>
+                        <tr>
+                            <th>created by</th>
+                            <th>form id</th>
+                            <th>form</th>
+                            <th>date</th>
+                            <th>current receiver</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for form in forms_inbox %}
+                        <tr class='clickable-row' data-toggle="modal" onClick="" data-target="#{{form.id}}" style="cursor:pointer">
+                            <td>{{ form.created_by.first_name }} {{ form.created_by.last_name }}</td>
+                            <td>{{ form.id }} </td>
+                            <td>{{ form.sample.title }} </td>
+                            <td>{{ form.date }} </td>
+                            <td  class="process">{{ form.current_transition.receivers_role }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <!-- END DATA TABLE-->
+        </div>
+    </div>  
+{% endblock content %}
+
+
+
+{% block modal %}
+
+{% for form in forms_inbox %}
+<div class="modal fade"  id="{{form.id}}" tabindex="-1" role="dialog" aria-labelledby="{{form.id}}" aria-hidden="true">
+    <div class="modal-dialog modal-lg"  {% comment %}style='max-width:1000px;'{% endcomment %} role="document"> 
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ form.sample.title }}  </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="" method="post">
+                {% csrf_token %}
+                <input type="hidden" hidden name='formid' value="{{ form.id }}">
+                <div class="modal-body px-5">
+                    {% for key , value in form.fields.items %}
+                        <div class="row form-group">
+                            <div class="col col-md-3">
+                                <label class=" form-control-label">{{ key }}</label>
+                            </div>
+                            <div class="col-12 col-md-9">
+                                {{ value.0 }}                      
+                            </div>
+                        </div>
+                    {% endfor %}
+                    <hr>
+                    {% for transition in form.all_transitions.all %}
+                        <div class="card 
+                        {% if transition.status == "ac"%} bg-success text-light
+                        {% elif transition.status == "sb"%} bg-warning 
+                        {% elif transition.status == "edit"%} bg-warning 
+                        {% elif transition.status == "dc"%} bg-danger text-light
+                        {% endif %}
+                        ">
+                            <div class="card-header">
+                                <strong class="card-title">{{ transition.receivers_role }}
+                                    {% if transition.receivers_role == form.current_transition.receivers_role %}
+                                    <small>
+                                        <span class="badge badge-info float-right mt-1">Current State</span>
+                                    </small>
+                                    {% endif %}
+                                </strong>
+                            </div>
+                            
+                            <div class="card-body">
+                                <div class="row form-group">
+                                    <div class="col col-md-3">
+                                        <label for="text-input" class=" form-control-label">Comment:</label>
+                                    </div>
+                                    <div class="col-12 col-md-9">
+                                        {{ transition.comment }}
+                                    </div>
+                                </div>
+                                <p class="card-text">Sign:
+                                    
+                                </p>
+                            </div>
+                        </div>
+                        <hr>
+                    {% endfor %}
+                    <div class="row form-group">
+                        <div class="col col-md-3">
+                            <label for="text-input" class=" form-control-label">Action:</label>
+                        </div>
+                        <div class="col-12 col-md-9">
+                            <div class="form-check">
+                                <div class="radio">
+                                    <label for="radio1" class="form-check-label ">
+                                        <input type="radio" id="radio1" name="action" value="accept" class="form-check-input" checked>
+                                        <span class="badge badge-success">Accept</span>
+                                    </label>
+                                </div>
+                                <div class="radio">
+                                    <label for="radio2" class="form-check-label ">
+                                        <input type="radio" id="radio2" name="action" value="decline" class="form-check-input">
+                                        <span class="badge badge-danger">Decline</span>
+                                    </label>
+                                </div>
+                                <div class="radio">
+                                    <label for="radio3" class="form-check-label ">
+                                        <input type="radio" id="radio3" name="action" value="edit" class="form-check-input">
+                                        <span class="badge badge-warning">Must Be Edited</span>
+                                    </label>
+                                </div>
+                                <div class="radio">
+                                    <label for="radio4" class="form-check-label ">
+                                        <input type="radio" id="radio4" name="action" value="sendback" class="form-check-input">
+                                        <span class="badge badge-info">Send Back</span>
+                                    </label>
+                                </div>
+                            </div>                        
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col col-md-3">
+                            <label for="text-input" class=" form-control-label">Comment:</label>
+                        </div>
+                        <div class="col-12 col-md-9">
+                            <textarea name="comment" rows="3" id="textarea-input" rows="9" placeholder="Comment..." class="form-control"></textarea>
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col col-md-3">
+                            <label for="text-input" class=" form-control-label">Sign:</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style='border-top:none'>
+                    {% comment %} <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button> {% endcomment %}
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                </div>
+            
+            </form>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+
+{% endblock modal %}
+
+
+
+{% block script %}
+{% endblock script %}

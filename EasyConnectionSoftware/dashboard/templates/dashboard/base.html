@@ -72,6 +72,10 @@
                             <a href={% url "forms"%}>
                                 <i class="far fa-check-square"></i>Forms</a>
                         </li>
+                        <li {% if page == "forms-inbox" %} class="active" {% endif %}>
+                            <a href={% url "forms-inbox"%}>
+                                <i class="fa fa-archive"></i>Forms Inbox</a>
+                        </li>
                         <li {% if page == "forms-admin" %} class="active" {% endif %}>
                             <a href={% url "forms-admin"%}>
                                 <i class="far fa-address-card"></i>Forms Admin</a>
@@ -107,6 +111,10 @@
                         <li {% if page == "forms" %} class="active" {% endif %}>
                             <a href={% url "forms"%}>
                                 <i class="far fa-check-square"></i>Forms</a>
+                        </li>
+                        <li {% if page == "forms-inbox" %} class="active" {% endif %}>
+                            <a href={% url "forms-inbox"%}>
+                                <i class="fa fa-archive"></i>Forms Inbox</a>
                         </li>
                         <li {% if page == "forms-admin" %} class="active" {% endif %}>
                             <a href={% url "forms-admin"%}>
