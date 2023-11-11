@@ -6,6 +6,9 @@ from django.contrib.auth.forms import UserCreationForm
 from .forms import SignupUserForm
 from .models import UserForm,FormSample,ROLES,FormTransition
 import json
+import base64
+from django.core.files.storage import FileSystemStorage
+from django.db.models import Q
 
 
 # Create your views here.
@@ -76,29 +79,46 @@ def dashboard_new_form(request,form_title):
     form_sample = FormSample.objects.filter(title=form_title).first()
 
     if request.method == "POST":
+        
         finaldict = {}
+        print(request.FILES)
+        for filename, file in request.FILES.items():
+            print(file)
+            fs = FileSystemStorage()
+            file_name = fs.save(file.name, file)
+            file_url = fs.url(filename)
+
+            finaldict[filename]=file_url
+
         for key, value in dict(request.POST).items():
             if key == "csrfmiddlewaretoken":
                 continue
-            finaldict[key] = value
+            if request.FILES.get(key, False):
+                file = request.FILES[key]
+                print("sdf")
+                fs = FileSystemStorage()
+                filename = fs.save(file.name, file)
+                file_url = fs.url(filename)
 
-        userform = UserForm.objects.create(created_by=request.user,sample=form_sample,descrition='',fields=finaldict)
+                finaldict[key]=file_url
+            else:
+                finaldict[key] = value
+        # print(finaldict)
+        userform = UserForm.objects.create(created_by=request.user,sample=form_sample,fields=finaldict)
 
         tranisitions = [None,]
-        print(json.loads(form_sample.transitions))
+        # print(json.loads(form_sample.transitions))
         for trn in json.loads(form_sample.transitions):
             tranisition = FormTransition.objects.create(form=userform,receivers_role=trn)
             tranisitions.append(tranisition)
             userform.all_transitions.add(tranisition)
-            print(trn)
+            # print(trn)
         tranisitions.append(None)
         
         for prev, current, nxt in zip(tranisitions, tranisitions[1:], tranisitions[2:]):
-            print(current)
-            if not nxt:
-                break
-            current.prev_transition = prev
-            current.next_transition = nxt
+            # print("HEREE: " + str(prev if prev else '') + "|"+ str(current if current else ''))
+            current.prev_transition = prev if prev else None
+            current.next_transition = nxt if nxt else None
             current.save()
 
         userform.current_transition = tranisitions[1]
@@ -132,7 +152,6 @@ def dashboard_forms_admin(request):
         if (not request.POST["fields"]) or  (not request.POST["title"]) or (not request.POST["description"]):
             return HttpResponseBadRequest("One or more fields are not filled")
 
-
         fields = json.loads(request.POST["fields"])
         sample = FormSample.objects.create(fields=fields,description=request.POST["description"],title=request.POST["title"],transitions=request.POST['trns'])
 
@@ -141,12 +160,10 @@ def dashboard_forms_admin(request):
     if request.method == "GET":
         all_sample_forms = list(FormSample.objects.all())
         return render(request, 'dashboard/forms-admin.html',{'page':'forms-admin',"formsamples":all_sample_forms})
-    
 
 def dashboard_form_inbox(request):
     if not request.user.is_authenticated:
         return redirect("login")
-
     if request.method == "POST":
         transition = UserForm.objects.get(pk=request.POST['formid']).current_transition
         if request.POST['comment']:
@@ -155,10 +172,12 @@ def dashboard_form_inbox(request):
         print(request.POST)
         if request.POST['action'] == 'accept':
             transition.status = 'ac'
+            transition.sign = request.POST['sign']
             transition.save()
             UserForm.objects.filter(pk=request.POST['formid']).update(current_transition=transition.next_transition) 
             if not transition.next_transition:
-                UserForm.status = 'Finished'
+                UserForm.objects.filter(pk=request.POST['formid']).update(current_transition=None,status='sm') 
+
 
         elif request.POST['action'] == 'sendback':
             if not transition.prev_transition:
@@ -168,13 +187,47 @@ def dashboard_form_inbox(request):
             UserForm.objects.filter(pk=request.POST['formid']).update(current_transition=transition.prev_transition) 
 
         elif request.POST['action'] == 'decline':
-            pass
+            transition.status = 'dc'
+            transition.save()
+            UserForm.objects.filter(pk=request.POST['formid']).update(current_transition=None,status='dc') 
+            
         elif request.POST['action'] == 'edit':
-            pass
+            transition.status = 'edit'
+            transition.save()
+            UserForm.objects.filter(pk=request.POST['formid']).update(current_transition=None,status='edit')
+
 
         return redirect("forms-inbox")
 
-    forms_inbox = UserForm.objects.filter(current_transition__receivers_role = request.user.role)
-    for form in forms_inbox:
-        form.fields = form.fields
+    forms_inbox = list(UserForm.objects.filter(current_transition__receivers_role = request.user.role))
+
+    submitted_forms = list(UserForm.objects.filter(status='sm'))
+    if submitted_forms:
+        for form in submitted_forms:
+            if form.all_transitions.filter(receivers_role=request.user.role):
+                forms_inbox.append(form)
+
+    decliend_forms = list(UserForm.objects.filter(status='dc'))
+    if decliend_forms:
+        for form in decliend_forms:
+            if form.all_transitions.filter(receivers_role=request.user.role):
+                forms_inbox.append(form)
+
+    if forms_inbox:
+        for form in forms_inbox:
+            form.fields = form.fields
     return render(request, 'dashboard/forms-inbox.html',{"forms_inbox":forms_inbox,'page':'forms-inbox'})
+
+def dashboard_update_form(request,form_id):
+    finaldict = {}
+    for key, value in dict(request.POST).items():
+        if key == "csrfmiddlewaretoken":
+            continue
+        finaldict[key] = value
+
+    current_transition = UserForm.objects.get(pk=form_id).all_transitions.filter(status='edit').first()
+    
+
+    UserForm.objects.filter(pk=form_id).update(fields=finaldict,current_transition=current_transition,status='og')
+
+    return redirect('forms')

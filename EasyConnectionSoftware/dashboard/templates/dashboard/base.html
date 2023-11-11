@@ -76,18 +76,26 @@
                             <a href={% url "forms-inbox"%}>
                                 <i class="fa fa-archive"></i>Forms Inbox</a>
                         </li>
-                        <li {% if page == "forms-admin" %} class="active" {% endif %}>
-                            <a href={% url "forms-admin"%}>
-                                <i class="far fa-address-card"></i>Forms Admin</a>
-                        </li>
                         <li {% if page == "oc-tasks" %} class="active" {% endif %}>
                             <a href={% url "oc-tasks"%}>
                                 <i class="far  fa-calendar-o"></i>Opening/Closing Tasks</a>
                         </li>
-                        <li {% if page == "oc-admin" %} class="active" {% endif %}>
-                            <a href={% url "oc-admin"%}>
-                                <i class="fas fa-desktop"></i>OCT Admin</a>
+                        {% if user.is_superuser %}
+                        <li class="has-sub">
+                            <a class="js-arrow" href="#">Admin</a>
+                            <ul class="navbar-mobile-sub__list list-unstyled js-sub-list">
+                                <li {% if page == "oc-admin" %} class="active" {% endif %}>
+                                    <a href={% url "oc-admin"%}>
+                                        <i class="fas fa-desktop"></i>OCT Admin</a>
+                                </li>
+                                <li {% if page == "forms-admin" %} class="active" {% endif %}>
+                                    <a href={% url "forms-admin"%}>
+                                        <i class="far fa-address-card"></i>Forms Admin</a>
+                                </li>    
+    
+                            </ul>
                         </li>
+                        {% endif %}
                     </ul>
                 </div>
             </nav>
@@ -116,18 +124,26 @@
                             <a href={% url "forms-inbox"%}>
                                 <i class="fa fa-archive"></i>Forms Inbox</a>
                         </li>
-                        <li {% if page == "forms-admin" %} class="active" {% endif %}>
-                            <a href={% url "forms-admin"%}>
-                                <i class="far fa-address-card"></i>Forms Admin</a>
-                        </li>
                         <li {% if page == "oc-tasks" %} class="active" {% endif %}>
                             <a href={% url "oc-tasks"%}>
                                 <i class="far  fa-calendar-o"></i>Opening/Closing Tasks</a>
                         </li>
-                        <li {% if page == "oc-admin" %} class="active" {% endif %}>
-                            <a href={% url "oc-admin"%}>
-                                <i class="fas fa-desktop"></i>OCT Admin</a>
+                        {% if user.is_superuser %}
+                        <li class="has-sub{% if page == "forms-admin" or page == "oc-admin" %} active {% endif %}">
+                            <a class="js-arrow" href="#"><i class="fa fa-angle-down"></i>Admin</a>
+                            <ul class="navbar-mobile-sub__list list-unstyled js-sub-list">
+                                <li {% if page == "oc-admin" %} class="active" {% endif %}>
+                                    <a href={% url "oc-admin"%}>
+                                        <i class="fas fa-desktop"></i>OCT Admin</a>
+                                </li>
+                                <li {% if page == "forms-admin" %} class="active" {% endif %}>
+                                    <a href={% url "forms-admin"%}>
+                                        <i class="far fa-address-card"></i>Forms Admin</a>
+                                </li>    
+    
+                            </ul>
                         </li>
+                        {% endif %}
                     </ul>
                 </nav>
             </div>
@@ -263,7 +279,7 @@
                                 <div class="account-wrap">
                                     <div class="account-item clearfix js-item-menu">
                                         <div class="image">
-                                            <img src={% static "images/icon/avatar-01.jpg" %} alt="John Doe" />
+                                            {% comment %} <img src={% static "images/icon/avatar-01.jpg" %} alt="John Doe" /> {% endcomment %}
                                         </div>
                                         <div class="content">
                                             <a class="js-acc-btn" href="#">{{ user.first_name }} {{ user.last_name }}</a>
@@ -272,7 +288,7 @@
                                             <div class="info clearfix">
                                                 <div class="image">
                                                     <a href="#">
-                                                        <img src={% static "images/icon/avatar-01.jpg" %} alt="John Doe" />
+                                                        {% comment %} <img src={% static "images/icon/avatar-01.jpg" %} alt="John Doe" /> {% endcomment %}
                                                     </a>
                                                 </div>
                                                 <div class="content">
@@ -338,7 +354,7 @@
 
 
 
-
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
     <!-- Jquery JS-->
     <script src={% static "vendor/jquery-3.2.1.min.js" %}></script>
     <!-- Bootstrap JS-->
