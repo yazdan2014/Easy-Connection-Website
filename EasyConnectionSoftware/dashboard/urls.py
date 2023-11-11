@@ -14,6 +14,7 @@ urlpatterns = [
 
 
     path("forms-admin/", views.dashboard_forms_admin, name="forms-admin"),
+    path("forms-admin/update", views.dashboard_forms_admin_update, name="forms-admin-update"),
     path("forms-admin/new", views.new_form_admin, name="newform"),
 
     

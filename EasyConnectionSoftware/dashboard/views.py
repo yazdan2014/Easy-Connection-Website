@@ -231,3 +231,10 @@ def dashboard_update_form(request,form_id):
     UserForm.objects.filter(pk=form_id).update(fields=finaldict,current_transition=current_transition,status='og')
 
     return redirect('forms')
+
+def dashboard_forms_admin_update(request):
+    if not request.user.is_authenticated:
+        return redirect("login")
+    if request.method == "GET":
+       FormSample.objects.get(pk = request.GET['pk']).delete()
+       return redirect('forms-admin')

@@ -48,10 +48,10 @@ class DailyTasks(models.Model):
     def __str__(self):
         return self.topic
 
-    def save(self, *args, **kwargs):
-        if not self.pk:
-            obj = super(DailyTasks, self).save(*args, **kwargs)
-            from .tasks import og_status
-            og_status.apply_async(args=[self.id],countdown=600)
-            return obj
-        return super(DailyTasks, self).save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     if not self.pk:
+    #         obj = super(DailyTasks, self).save(*args, **kwargs)
+    #         from .tasks import og_status
+    #         og_status.apply_async(args=[self.id],countdown=600)
+    #         return obj
+    #     return super(DailyTasks, self).save(*args, **kwargs)
