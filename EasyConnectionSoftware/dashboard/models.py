@@ -14,26 +14,28 @@ ROLES = (
         ('Accountant', 'Accountant'),
 
         ('Business Development Manager', 'Business Development Manager'),
-        ('Business Development Specialist', 'Business Development Specialist'),
+        ('Business Development Expert', 'Business Development Expert'),
         ('Marketing Moderator', 'Marketing Moderator'),
-        ('Marketing Specialist', 'Marketing Specialist'),
+        ('Marketing Expert', 'Marketing Expert'),
 
-        ('IT Specialist', 'IT Specialist'),
+        ('IT Expert', 'IT Expert'),
 
         ('Technical Moderator', 'Technical Moderator'),
-        ('Subline Chain Technation(Logistic)', 'Subline Chain Technation(Logistic)'),
+        ('Logistic Expert', 'Logistic Expert'),
         ('Factory', 'Factory'),
-        ('QC Technation', 'QC Technation'),
+        ('QC Expert', 'QC Expert'),
     )
 
 class User(AbstractUser):
     email = models.CharField(max_length=80,unique=True)
     username = models.CharField(max_length=45,unique=True)
-    
+
     first_name = models.CharField(max_length=45)
     last_name =  models.CharField(max_length=45)
 
     role = models.CharField(max_length=45, choices=ROLES)
+
+    
 
     USERNAME_FIELD="username"
     REQUIRED_FIELDS=['email',"first_name","last_name","role"]
@@ -56,6 +58,7 @@ class FormTransition(models.Model):
     # receiver_user = models.ForeignKey("User", related_name='receiver' , on_delete=models.CASCADE , null=True)
     receivers_role = models.CharField(max_length=150, choices=ROLES,null=True)
 
+    sign = models.FileField(upload_to='uploads/', null=True)
     next_transition = models.ForeignKey('self', related_name='next', on_delete=models.CASCADE , null=True)
     prev_transition = models.ForeignKey('self', related_name='prev', on_delete=models.CASCADE , null=True)
 
@@ -67,7 +70,9 @@ class FormTransition(models.Model):
         ('ac', 'Accepted'),
         ('dc','Declined')
     )
-    status = models.CharField(max_length=150,choices=STATUS_CHOICES,default='og')
+
+    # upload = models.FileField(upload_to ='uploads')
+    status = models.CharField(max_length=150,choices=STATUS_CHOICES,default='og',null=True)
     date = models.DateTimeField(auto_now_add=True)
     comment = models.TextField()
 
@@ -81,16 +86,19 @@ class FormTransition(models.Model):
     def __str__(self):
         return str(self.form.id) +"| " + self.receivers_role + ( " ->" +self.next_transition.receivers_role if self.next_transition else "")
 
-
-
 class UserForm(models.Model):
     created_by = models.ForeignKey("User", related_name='created_by' , on_delete=models.CASCADE)
     sample = models.ForeignKey("FormSample",related_name ="sample", on_delete=models.CASCADE)
-    descrition = models.TextField()
     title = models.CharField(max_length=50)
     date = models.DateTimeField(auto_now_add=True)
-    status = models.CharField(max_length=50)
-
+    STATUS_CHOICES = (
+        ('og','On Going'),
+        ('edit','Must Be Edited'),
+        ('sm', 'Submitted'),
+        ('dc','Declined')
+    )
+    status = models.CharField(max_length=50,choices=STATUS_CHOICES,null=True,blank=True)
+    
     # current_receiver = models.ForeignKey("User", related_name='current_receiver', on_delete=models.SET_NULL,blank=True, null=True)
 
     fields = models.JSONField(null=True) # Type: Value

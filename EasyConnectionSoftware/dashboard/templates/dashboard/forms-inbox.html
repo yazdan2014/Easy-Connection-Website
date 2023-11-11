@@ -29,7 +29,7 @@
                     {% comment %} <button class="au-btn-filter">
                         <i class="zmdi zmdi-filter-list"></i>filters</button> {% endcomment %}
                 </div>
-                <div class="table-data__tool-right">
+                {% comment %} <div class="table-data__tool-right">
                     <button  type="button" data-toggle="modal" data-target="#mediumModal" class="au-btn au-btn-icon au-btn--green au-btn--small">
                         <i class="zmdi zmdi-plus" ></i>add form</button>
                     <div class="rs-select2--dark rs-select2--sm rs-select2--dark2">
@@ -38,7 +38,7 @@
                         </select>
                         <div class="dropDownSelect2"></div>
                     </div>
-                </div>
+                </div> {% endcomment %}
             </div>
             <!-- DATA TABLE-->
             <div class="table-responsive m-b-40">
@@ -47,7 +47,7 @@
                         <tr>
                             <th>created by</th>
                             <th>form id</th>
-                            <th>form</th>
+                            <th>form sample</th>
                             <th>date</th>
                             <th>current receiver</th>
                         </tr>
@@ -59,7 +59,10 @@
                             <td>{{ form.id }} </td>
                             <td>{{ form.sample.title }} </td>
                             <td>{{ form.date }} </td>
-                            <td  class="process">{{ form.current_transition.receivers_role }}</td>
+                            <td  class="process">{% if  form.status == 'sm'%} <span class="badge badge-success">Submitted</span> 
+                                {% elif form.status == 'dc'%}<span class="badge badge-danger">Declined</span>
+                                {% elif form.status == 'edit'%}<span class="badge badge-warning">Must Be Edited</span>                                
+                                {% else %}{{ form.current_transition.receivers_role }} {% endif %} </td>
                         </tr>
                     {% endfor %}
                     </tbody>
@@ -84,7 +87,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form action="" method="post">
+            <form action="" method="post" onsubmit="event.preventDefault()" >
                 {% csrf_token %}
                 <input type="hidden" hidden name='formid' value="{{ form.id }}">
                 <div class="modal-body px-5">
@@ -127,12 +130,13 @@
                                     </div>
                                 </div>
                                 <p class="card-text">Sign:
-                                    
+                                    <img src="{{transition.sign}}" id='canvas_{{ transition.id }}'>
                                 </p>
                             </div>
                         </div>
-                        <hr>
                     {% endfor %}
+                    {% if form.status != 'sm' %}
+                    <hr>
                     <div class="row form-group">
                         <div class="col col-md-3">
                             <label for="text-input" class=" form-control-label">Action:</label>
@@ -157,12 +161,14 @@
                                         <span class="badge badge-warning">Must Be Edited</span>
                                     </label>
                                 </div>
+                                {% if form.current_transition.prev_transition %}
                                 <div class="radio">
                                     <label for="radio4" class="form-check-label ">
                                         <input type="radio" id="radio4" name="action" value="sendback" class="form-check-input">
                                         <span class="badge badge-info">Send Back</span>
                                     </label>
                                 </div>
+                                {% endif %}
                             </div>                        
                         </div>
                     </div>
@@ -178,11 +184,20 @@
                         <div class="col col-md-3">
                             <label for="text-input" class=" form-control-label">Sign:</label>
                         </div>
+                        
+                        <div class="col-12 col-md-9">
+                            <canvas class="sigPad" style="border:1px #CED4DA solid"></canvas>
+                            {% comment %} <button type="button" onclick='test()'>test</button> {% endcomment %}
+                        </div>
                     </div>
+                    {% endif %}
                 </div>
                 <div class="modal-footer" style='border-top:none'>
+                    {% if form.status != 'sm' %}
                     {% comment %} <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button> {% endcomment %}
                     <button type="submit" class="btn btn-primary">Confirm</button>
+                    
+                    {% endif %}
                 </div>
             
             </form>
@@ -197,4 +212,35 @@
 
 
 {% block script %}
+<script>
+    const canvas = document.getElementsByTagName("canvas");
+    for(const canva of canvas){
+        new SignaturePad(canva);
+    }
+
+    $('form').submit(function(e){
+        //prevent default
+        console.log($(this)[0])
+        canvas_f = $(this)[0].getElementsByTagName("canvas")[0];
+        e.preventDefault();
+        console.log(canvas_f.toDataURL("image/png"))
+        $.post({
+            url: '{% url "forms-inbox" %}',
+            data: $(this).serialize() + '&sign=' + encodeURIComponent(canvas_f.toDataURL("image/png")),
+            contentType:"application/x-www-form-urlencoded; charset=UTF-8",
+            success: function (data, textStatus, jqXHR) {
+                window.location.reload()
+            },
+        })
+
+    
+    });
+
+
+    {% comment %} $(document).on('submit', 'form', function(event){
+        event.preventDefault();
+        return false
+    }); {% endcomment %}
+      
+</script>
 {% endblock script %}

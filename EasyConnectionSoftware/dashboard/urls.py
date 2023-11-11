@@ -9,6 +9,7 @@ urlpatterns = [
     
     path("forms/", views.dashboard_forms, name="forms"),
     path("forms/<str:form_title>", views.dashboard_new_form, name="form-add"),
+    path('forms/update/<str:form_id>', views.dashboard_update_form, name='form-update' ),
     path("forms-inbox/", views.dashboard_form_inbox, name="forms-inbox"),
 
 

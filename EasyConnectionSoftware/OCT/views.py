@@ -34,7 +34,7 @@ def dashboard_oc_tasks(request):
         print(request.POST)
     
     found_oct = OCT.objects.filter(user=request.user).first()
-    monthly_tasks = list(found_oct.monthly_tasks.all())
+    monthly_tasks = list(found_oct.monthly_tasks.filter(Q(created_at__gte=date.today()) | Q(status='nd')))
     daily_tasks = list(found_oct.daily_tasks.filter(Q(created_at__gte=date.today()) | Q(status='nd')))
 
     return render(request, 'OCT/oc-tasks.html',{'page':'oc-tasks','daily_tasks':daily_tasks,"monthly_tasks":monthly_tasks})
@@ -153,9 +153,10 @@ def get_monthlygoals(request):
     if not request.user.is_authenticated:
         return redirect("login")
     
-    this_month = datetime.today().date().month
-    print(this_month)
-    res_raw = list(OCT.objects.filter(user=request.GET['uid']).first().monthly_tasks.filter(created_at__month=this_month).values())
+    # this_month = datetime.today().date().month
+    # print(this_month)
+    
+    res_raw = list(OCT.objects.filter(user=request.GET['uid']).first().monthly_tasks.all().values())
     return JsonResponse({'data':res_raw})
 
 def check_task(request):

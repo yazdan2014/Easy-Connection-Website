@@ -155,3 +155,6 @@ CELERY_BEAT_SCHEDULE = {
         'schedule': crontab(minute=59,hour=23)
     },
 }
+
+MEDIA_ROOT = os.path.join(BASE_DIR, "uploads")
+MEDIA_URL  =  '/uploads/'
