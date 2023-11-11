@@ -2,7 +2,7 @@ from django.db import models
 from datetime import timedelta
 from django.utils.timezone import now
 
-# Create your models here.
+# Create your models here. sdf
 class OCT(models.Model):
     user = models.OneToOneField("dashboard.User", related_name='octuser' , on_delete=models.CASCADE)
     daily_tasks = models.ManyToManyField("DailyTasks",blank=True)
