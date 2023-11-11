@@ -49,6 +49,7 @@
                             <th>form</th>
                             <th>date</th>
                             <th>current receiver</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -57,10 +58,12 @@
                             <td>{{ user_form.id }} </td>
                             <td>{{ user_form.sample.title }} </td>
                             <td>{{ user_form.date }} </td>
-                            <td  class="process">{% if  user_form.status == 'sm'%} <span class="badge badge-success">Submitted</span> 
+                            <td class="process">{% if  user_form.status == 'sm'%} <span class="badge badge-success">Submitted</span> 
                                 {% elif user_form.status == 'dc'%}<span class="badge badge-danger">Declined</span>
                                 {% elif user_form.status == 'edit'%}<span class="badge badge-warning">Must Be Edited</span>                                
                                 {% else %}{{ user_form.current_transition.receivers_role }} {% endif %} </td>
+                            <td bgcolor='{{user_form.sample.theme_color}}'></td>
+
                         </tr>
                     {% endfor %}
                     </tbody>
