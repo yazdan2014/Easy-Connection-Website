@@ -3,7 +3,6 @@ from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 import json
 from OCT.models import OCT
-
 # Create your models here.
 ROLES = (
         ('CEO', 'CEO'),
@@ -115,4 +114,6 @@ class FormSample(models.Model):
     description = models.TextField()
     fields = models.JSONField(null=True) # Type: , Value:
     transitions = models.JSONField(null=True)
-    
+    theme_color = models.CharField(null=True,max_length=50)
+    def __str__(self):
+        return self.title + "/" + self.description

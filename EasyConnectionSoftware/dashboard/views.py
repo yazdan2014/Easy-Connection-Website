@@ -153,7 +153,7 @@ def dashboard_forms_admin(request):
             return HttpResponseBadRequest("One or more fields are not filled")
 
         fields = json.loads(request.POST["fields"])
-        sample = FormSample.objects.create(fields=fields,description=request.POST["description"],title=request.POST["title"],transitions=request.POST['trns'])
+        sample = FormSample.objects.create(fields=fields,description=request.POST["description"],title=request.POST["title"],transitions=request.POST['trns'],theme_color=request.POST['color'])
 
         return redirect("forms-admin")
     ROLES_filtered = []

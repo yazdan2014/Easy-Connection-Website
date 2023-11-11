@@ -136,6 +136,21 @@
             <div id='roles' class="form-actions form-group col col-md-12">
                 
             </div>
+            <hr>
+            <div>
+                <div class="card-title">
+                    <h3 class="title-2">Choose a color for your form</h3>
+                    <br>
+                </div>
+                <div class="row form-group">
+                    <div class="col col-md-3">
+                        <label for="text-input" class=" form-control-label">Form Color</label>
+                    </div>
+                    <div class="col-12 col-md-1">
+                        <input type="color" width='10px' id="form_color" name="text-input" placeholder="title" class="">
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="card-footer">
             {% comment %} <button type="submit" class="btn btn-info btn-sm">
@@ -245,7 +260,7 @@
         $.ajax({
             type: 'POST',
             url: '{% url "forms-admin" %}',
-            data: {'csrfmiddlewaretoken': '{{ csrf_token }}','fields': JSON.stringify(fields),"title":$("#form_title").val() , "description":$("#form_desc").val(),'trns':  JSON.stringify(Object.values(roles))},
+            data: {'csrfmiddlewaretoken': '{{ csrf_token }}','fields': JSON.stringify(fields),"title":$("#form_title").val() , "description":$("#form_desc").val(),'trns':  JSON.stringify(Object.values(roles)),'color':$('#form_color').val()},
             success: function(data, textStatus) {
                 $("#customform").prepend(`
                     <div class="sufee-alert alert with-close alert-success alert-dismissible fade show">

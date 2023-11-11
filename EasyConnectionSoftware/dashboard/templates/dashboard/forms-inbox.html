@@ -45,6 +45,7 @@
                 <table class="table table-borderless table-data3">
                     <thead>
                         <tr>
+                            <th></th>
                             <th>created by</th>
                             <th>form id</th>
                             <th>form sample</th>
@@ -54,8 +55,9 @@
                     </thead>
                     <tbody>
                     {% for form in forms_inbox %}
-                        <tr class='clickable-row' data-toggle="modal" onClick="" data-target="#{{form.id}}" style="cursor:pointer">
-                            <td>{{ form.created_by.first_name }} {{ form.created_by.last_name }}</td>
+                        <tr class='clickable-row ' data-toggle="modal" onClick="" data-target="#{{form.id}}" style="cursor:pointer;">
+                            <td bgcolor='{{form.sample.theme_color}}'></td>
+                            <td >{{ form.created_by.first_name }} {{ form.created_by.last_name }}</td>
                             <td>{{ form.id }} </td>
                             <td>{{ form.sample.title }} </td>
                             <td>{{ form.date }} </td>
@@ -135,7 +137,7 @@
                             </div>
                         </div>
                     {% endfor %}
-                    {% if form.status != 'sm' %}
+                    {% if form.status != 'sm' and form.status != 'dc' %}
                     <hr>
                     <div class="row form-group">
                         <div class="col col-md-3">
@@ -193,7 +195,7 @@
                     {% endif %}
                 </div>
                 <div class="modal-footer" style='border-top:none'>
-                    {% if form.status != 'sm' %}
+                    {% if form.status != 'sm' and form.status != 'dc' %}
                     {% comment %} <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button> {% endcomment %}
                     <button type="submit" class="btn btn-primary">Confirm</button>
                     
