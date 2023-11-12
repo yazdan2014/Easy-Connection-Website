@@ -274,7 +274,7 @@
                         {% comment %} <button type="submit" class="btn btn-info btn-sm">
                             <i class="fa fa-dot-circle-o"></i> Back
                         </button> {% endcomment %}
-                        <button id="submit_butt" class="btn btn-primary btn-sm">
+                        <button id="submit_butt" class="btn btn-primary btn-sm" onclick="editform({{formsample.id}})">
                             <i class="fa fa-dot-circle-o"></i> Submit
                         </button>
                         <button type="reset" class="btn btn-danger btn-sm">
@@ -379,13 +379,16 @@
 
     }
 
-
-    $('#submit_butt').click(function () {
+    function editform(id){
+        console.log(id)
+        console.log(JSON.stringify(fields))
+        console.log($("#form_title").val())
+        console.log(JSON.stringify(Object.values(roles)))
 
         $.ajax({
             type: 'POST',
             url: '{% url "forms-admin-update" %}',
-            data: {'csrfmiddlewaretoken': '{{ csrf_token }}','fields': JSON.stringify(fields),"title":$("#form_title").val() , "description":$("#form_desc").val(),'trns':  JSON.stringify(Object.values(roles)), 'pk' : '33'},
+            data: {'csrfmiddlewaretoken': '{{ csrf_token }}','fields': JSON.stringify(fields),"title":$("#form_title").val() , "description":$("#form_desc").val(),'trns':  JSON.stringify(Object.values(roles)), 'pk' : id},
             success: function(data, textStatus) {
                 $("#customform").prepend(`
                     <div class="sufee-alert alert with-close alert-success alert-dismissible fade show">
@@ -410,7 +413,40 @@
                 `)
             },
         });
-    });
+    }
+
+
+    // $('#submit_butt').click(function () {
+
+    //     $.ajax({
+    //         type: 'POST',
+    //         url: '{% url "forms-admin-update" %}',
+    //         data: {'csrfmiddlewaretoken': '{{ csrf_token }}','fields': JSON.stringify(fields),"title":$("#form_title").val() , "description":$("#form_desc").val(),'trns':  JSON.stringify(Object.values(roles)), 'pk' : '33'},
+    //         success: function(data, textStatus) {
+    //             $("#customform").prepend(`
+    //                 <div class="sufee-alert alert with-close alert-success alert-dismissible fade show">
+    //                     You successfully read this important alert.
+    //                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    //                         <span aria-hidden="true">×</span>
+    //                     </button>
+    //                 </div>
+    //             `)
+    //             window.location.href = "{% url 'forms-admin' %}"
+    //         }
+    //         ,
+    //         error: function(e) {
+    //             console.log(e)
+    //             $("#errormessages").html(`
+    //                 <div class="sufee-alert alert with-close alert-danger alert-dismissible fade show">
+    //                     One or more fields are not filled
+    //                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    //                         <span aria-hidden="true">×</span>
+    //                     </button>
+    //                 </div>
+    //             `)
+    //         },
+    //     });
+    // });
 
 
 </script>
