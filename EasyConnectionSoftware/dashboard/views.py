@@ -231,7 +231,6 @@ def dashboard_update_form(request,form_id):
         finaldict[key] = value
 
     current_transition = UserForm.objects.get(pk=form_id).all_transitions.filter(status='edit').first()
-    
 
     UserForm.objects.filter(pk=form_id).update(fields=finaldict,current_transition=current_transition,status='og')
 

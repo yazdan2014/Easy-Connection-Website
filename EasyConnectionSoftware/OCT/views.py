@@ -34,7 +34,7 @@ def dashboard_oc_tasks(request):
         print(request.POST)
     
     found_oct = OCT.objects.filter(user=request.user).first()
-    monthly_tasks = list(found_oct.monthly_tasks.filter(Q(created_at__gte=date.today()) | Q(status='nd')))
+    monthly_tasks = list(found_oct.monthly_tasks.filter(Q(created_at__month=date.today().month) | ~Q(progress_percentage__in = ['100','100%','100 %'])))
     daily_tasks = list(found_oct.daily_tasks.filter(Q(created_at__gte=date.today()) | Q(status='nd')))
 
     return render(request, 'OCT/oc-tasks.html',{'page':'oc-tasks','daily_tasks':daily_tasks,"monthly_tasks":monthly_tasks})
@@ -78,7 +78,7 @@ def close_task(request):
     if request.method == "POST":
         
         if request.POST['type'] == 'daily':
-            OCT.objects.filter(user=request.user).first().daily_tasks.filter(pk=request.POST['pk']).update(actual_time=request.POST['actual_time'],status='done')
+            OCT.objects.filter(user=request.user).first().daily_tasks.filter(pk=request.POST['pk']).update(actual_time=request.POST['actual_time'],status='done',closed_at=datetime.now())
 
             return redirect('oc-tasks')
 
@@ -143,6 +143,11 @@ def get_dailytasks(request):
             'ca_weekday':res.created_at.weekday(),
             'ca_weekdaystr':res.created_at.strftime("%A"),
             'ca_date':res.created_at.date(),
+
+            'closed_time':res.closed_at.strftime("%H:%M:%S") if res.closed_at else '',
+            'closed_weekday':res.closed_at.weekday() if res.closed_at else '',
+            'closed_weekdaystr':res.closed_at.strftime("%A") if res.closed_at else '',
+            'closed_date':res.closed_at.date() if res.closed_at else '',
         }
         final_res[res.created_at.strftime("%A")].append(serializer)
 
@@ -163,10 +168,10 @@ def check_task(request):
     if not request.user.is_authenticated:
         return redirect("login")
 
-    if request.GET['monthly']:
+    if 'monthly' in request.GET:
         MonthlyTasks.objects.filter(pk=request.GET['tid']).update(checked_by_admin=True)
     else:
-        DailyTasks.objects.daily_tasks.filter(pk=request.GET['tid']).update(checked_by_admin=True)
+        DailyTasks.objects.filter(pk=request.GET['tid']).update(checked_by_admin=True)
     return JsonResponse({'data':"Successful"})
 
 

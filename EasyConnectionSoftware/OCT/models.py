@@ -13,6 +13,7 @@ class MonthlyTasks(models.Model):
     progress_percentage = models.CharField(max_length=150)
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+    closed_at = models.DateTimeField(null=True,blank=True)
     admin_comment = models.CharField(max_length=150, null=True,blank=True)
     checked_by_admin = models.BooleanField(default=False)
 
@@ -35,6 +36,7 @@ class DailyTasks(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     admin_comment = models.CharField(max_length=150, null=True,blank=True)
     checked_by_admin = models.BooleanField(default=False)
+    closed_at = models.DateTimeField(null=True,blank=True)
 
     STATUS_CHOICES = (
         ('jc','Just Created'),

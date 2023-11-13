@@ -425,6 +425,7 @@ function getThisWeek(user_id){
                                 <th>status</th>
                                 <th>related goal</th>
                                 <th>created at</th>
+                                <th>closed at</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -442,6 +443,7 @@ function getThisWeek(user_id){
                             <span class="text-primary">${ task.goal }</span>
                         </td>
                         <td>${ task.ca_time }</td>
+                        <td>${ task.closed_date } | ${ task.closed_time }</td>
                         <td>
                             <div class="table-data-feature">
                                 <button class="item bg-success check-task" data-toggle="modal" onClick='checkTask("${ task.id }")' title="Check Task" data-toggle="tooltip" data-placement="top" title="Delete Task"  ${ task.checked_by_admin ? 'hidden':''} > 
