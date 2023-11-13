@@ -156,10 +156,15 @@ def dashboard_forms_admin(request):
         sample = FormSample.objects.create(fields=fields,description=request.POST["description"],title=request.POST["title"],transitions=request.POST['trns'],theme_color=request.POST['color'])
 
         return redirect("forms-admin")
-    
+    ROLES_filtered = []
+    for r1, r2 in ROLES:
+        ROLES_filtered.append(r1)
     if request.method == "GET":
         all_sample_forms = list(FormSample.objects.all())
-        return render(request, 'dashboard/forms-admin.html',{'page':'forms-admin',"formsamples":all_sample_forms})
+        for sample in all_sample_forms:
+            sample.fields = list(sample.fields)
+            sample.transitions = json.loads(sample.transitions)
+        return render(request, 'dashboard/forms-admin.html',{'page':'forms-admin',"formsamples":all_sample_forms,"roles":ROLES_filtered})
 
 def dashboard_form_inbox(request):
     if not request.user.is_authenticated:
@@ -238,3 +243,6 @@ def dashboard_forms_admin_update(request):
     if request.method == "GET":
        FormSample.objects.get(pk = request.GET['pk']).delete()
        return redirect('forms-admin')
+    if request.method == "POST":
+        FormSample.objects.filter(pk = request.POST['pk']).update(title=request.POST['title'],fields=request.POST['fields'],description=request.POST['description'],transitions=request.POST['trns'])
+        return redirect('forms-admin')
