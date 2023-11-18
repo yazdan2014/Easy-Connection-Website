@@ -14,4 +14,6 @@ urlpatterns = [
     path("admin/checktask" , views.check_task, name='checktask'),
     path("admin/commenttask" , views.comment_task, name='commenttask'),
 
+    path("admin/export" , views.export_excel, name='export'),
+
 ]
