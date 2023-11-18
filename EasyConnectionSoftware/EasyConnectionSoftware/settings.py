@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'dashboard',
     'OCT',
     "scheduler",
+    'suggestions',
 ]
 
 AUTH_USER_MODEL = "dashboard.User"
