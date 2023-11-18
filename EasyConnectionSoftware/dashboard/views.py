@@ -70,6 +70,7 @@ def dashboard_forms(request):
     for form in user_forms:
         form.sample.transitions = json.loads(form.sample.transitions)
 
+
     return render(request, 'dashboard/forms.html',{'page':'forms','user_forms':user_forms, 'form_samples':all_sample_forms})
 
 def dashboard_new_form(request,form_title):
@@ -154,7 +155,7 @@ def dashboard_forms_admin(request):
 
         fields = json.loads(request.POST["fields"])
         sample = FormSample.objects.create(fields=fields,description=request.POST["description"],title=request.POST["title"],transitions=request.POST['trns'],theme_color=request.POST['color'])
-
+        
         return redirect("forms-admin")
     ROLES_filtered = []
     for r1, r2 in ROLES:
@@ -162,8 +163,10 @@ def dashboard_forms_admin(request):
     if request.method == "GET":
         all_sample_forms = list(FormSample.objects.all())
         for sample in all_sample_forms:
-            sample.fields = list(sample.fields)
+            sample.fields = json.loads(sample.fields) if issubclass(type(sample.fields), str) else sample.fields
+            sample.fields_str = json.dumps(sample.fields)
             sample.transitions = json.loads(sample.transitions)
+            sample.transitions_str = sample.transitions if issubclass(type(sample.transitions), str) else json.dumps(sample.transitions)
         return render(request, 'dashboard/forms-admin.html',{'page':'forms-admin',"formsamples":all_sample_forms,"roles":ROLES_filtered})
 
 def dashboard_form_inbox(request):
@@ -242,6 +245,10 @@ def dashboard_forms_admin_update(request):
     if request.method == "GET":
        FormSample.objects.get(pk = request.GET['pk']).delete()
        return redirect('forms-admin')
+
     if request.method == "POST":
-        FormSample.objects.filter(pk = request.POST['pk']).update(title=request.POST['title'],fields=request.POST['fields'],description=request.POST['description'],transitions=request.POST['trns'])
+        print(request.POST)
+        fields = json.loads(request.POST["fields"])
+
+        FormSample.objects.filter(pk = request.POST['pk']).update(title=request.POST['title'],fields=fields,description=request.POST['description'],transitions=request.POST['trns'])
         return redirect('forms-admin')

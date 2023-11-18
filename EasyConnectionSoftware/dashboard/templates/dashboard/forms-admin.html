@@ -55,7 +55,7 @@
                                 <td> 0</td>
                                 <td>
                                     <div class="table-data-feature">
-                                        <button class="item" data-toggle="modal" data-target='#edit_{{formsample.id}}' data-placement="top" title="Edit">
+                                        <button class="item" data-toggle="modal" data-target='#edit_{{formsample.id}}' data-placement="top" title="Edit" onclick="pushToField('{{formsample.fields_str}}','{{formsample.transitions_str}}','{{formsample.id}}')">
                                             <i class="zmdi zmdi-edit"></i>
                                         </button>
 
@@ -216,14 +216,14 @@
                                         <th>Remove</th>
                                     </tr>
                                 </thead>
-                                <tbody id="fields_table">
+                                <tbody id="fields_table" >
                                     {% for field in formsample.fields %}
                                     <tr class="fade-in" id="{{formsample.id}}{{field.field_title}}">
                                         <td>{{field.field_title}}</td>
                                         <td>{{field.field_type}}</td>
                                         <td>{{field.required}}</td>
                                         <td>{{field.extra_details}}</td>
-                                        <td><button onclick="removeField('{{formsample.id}}{{field.field_title}}')" class="btn btn-danger btn-sm"><i class="fa fa-close"></i></button></td>
+                                        <td><button onclick="removeField('{{formsample.id}}','{{field.field_title}}')" class="btn btn-danger btn-sm"><i class="fa fa-close"></i></button></td>
                                     </tr>
                                     {% endfor %}
                                     {% comment %} <tr>
@@ -258,16 +258,16 @@
                         </form>
                         
                         <div class= "col col-md-5">
-                            <button onclick="addRole({{formsample.id}})" class="btn btn-primary btn-sm">Add</button>
+                            <button onclick="addRole(null,{{formsample.id}})" class="btn btn-primary btn-sm">Add</button>
                         </div>
                         <br>
-                        <div id= "{{formsample.id}}roles"class="form-actions form-group col col-md-12">
-                            {% for field in formsample.transitions %}
+                        <div id= "{{formsample.id}}roles" roles="" class="form-actions form-group col col-md-12">
+                            <!-- {% for field in formsample.transitions %}
                             <span id= "{{field}}"> {{field}} <button onclick="removeRole('{{field}}')" class="btn btn-danger btn-sm">
                                 <i class="fa fa-close"></i></button> 
                                 <i width='50px' class="fa fa-arrow-right"></i> 
                             </span>
-                            {% endfor%}
+                            {% endfor%} -->
                         </div>
                     </div>
                     <div class="card-footer">
@@ -296,33 +296,66 @@
 {% block script %}
 <script>
 
+    let roles = {}
     let fields = []
+
+    function pushToField(data1 ,data2,id){
+        $(`#${id}roles`).html('')
+        data1 = JSON.parse(data1)
+        data2 = JSON.parse(data2)
+
+        for (const item of data1){
+            fields.push({ "field_title": item.field_title , "field_type": item.field_type, "extra_details": item.extra_details,'required': item.required })
+        } 
+
+        for (const role of data2){
+
+            // roles[`${(+new Date).toString(36)}_r`] = item
+            addRole(role ,id)
+        }
+
+    }
+    
+    
     $("#add_field").submit(function(e) {
         e.preventDefault();
     });
 
-    let roles = {}
 
+    $('.modal').on('hide.bs.modal', function (e) {
+        roles = {}
+        fields = []
+    })
+    function addRole(role,id){
+        let random_id = Date.now() + Math.random()
+        if (role){
+            $(`#${id}roles`).append(`
+                <span id='${random_id}_r'>  ${role} <button onclick="removeRole('${random_id}_r')" class="btn btn-danger btn-sm">                <i class="fa fa-close"></i></button> 
+                    <i width='50px' class="fa fa-arrow-right"></i> 
+                </span>
+            `)
+            roles[`${random_id}_r`] =  role
+        }else{
+            $(`#${id}roles`).append(`
+                <span id='${random_id}_r'>  ${$(`#${id}role`).val()} <button onclick="removeRole('${random_id}_r')" class="btn btn-danger btn-sm">                <i class="fa fa-close"></i></button> 
+                    <i width='50px' class="fa fa-arrow-right"></i> 
+                </span>
+            `)
+            roles[`${random_id}_r`] =  $(`#${id}role`).val()
 
-    function addRole(id){
-        $(`#${id}roles`).append(`
-            <span id='${(+new Date).toString(36)}_r'>  ${$(`#${id}role`).val()} <button onclick="removeRole('${(+new Date).toString(36)}_r')" class="btn btn-danger btn-sm">                <i class="fa fa-close"></i></button> 
-                <i width='50px' class="fa fa-arrow-right"></i> 
-            </span>
-        `)
-        roles[`${(+new Date).toString(36)}_r`] =  $("#role").val()
-        console.log(Object.values(roles))
+        }
     }
 
     function removeRole(rid){
-        $(`#${rid}`).remove()
+
+        $(document.getElementById(rid)).remove()
         delete roles[rid]
     }
 
-    function removeField(element_id){
-        $(`#${element_id}`).remove()
+    function removeField(element_id,title){
+        $(`#${element_id+title}`).remove()
         
-        fields = fields.filter(function(f){return f.field_title != element_id})
+        fields = fields.filter(function(f){return f.field_title != title})
     }
 
     function extraDetailsField(){
@@ -380,11 +413,8 @@
     }
 
     function editform(id){
-        console.log(id)
-        console.log(JSON.stringify(fields))
-        console.log($("#form_title").val())
-        console.log(JSON.stringify(Object.values(roles)))
-
+       
+        
         $.ajax({
             type: 'POST',
             url: '{% url "forms-admin-update" %}',
