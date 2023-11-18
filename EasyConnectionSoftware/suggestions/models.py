@@ -1,7 +1,7 @@
 from django.db import models
 
 class SuggestionSample(models.Model):
-    user = models.OneToOneField("dashboard.User", related_name='octuserS' , on_delete=models.CASCADE)
+    user = models.ForeignKey("dashboard.User", related_name='octuserS' , on_delete=models.CASCADE)
     title = models.CharField(max_length=50)
     description = models.TextField()
     def __str__(self):
