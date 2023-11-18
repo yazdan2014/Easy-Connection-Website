@@ -20,6 +20,7 @@
     <link href={% static "vendor/font-awesome-4.7/css/font-awesome.min.css" %} rel="stylesheet" media="all">
     <link href={% static "vendor/font-awesome-5/css/fontawesome-all.min.css" %} rel="stylesheet" media="all">
     <link href={% static "vendor/mdi-font/css/material-design-iconic-font.min.css" %} rel="stylesheet" media="all">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
     <!-- Bootstrap CSS-->
     <link href={% static "vendor/bootstrap-4.1/bootstrap.min.css" %} rel="stylesheet" media="all">
@@ -127,6 +128,10 @@
                         <li {% if page == "oc-tasks" %} class="active" {% endif %}>
                             <a href={% url "oc-tasks"%}>
                                 <i class="far  fa-calendar-o"></i>Opening/Closing Tasks</a>
+                        </li>
+                        <li {% if page == "suggestions" %} class="active" {% endif %}>
+                            <a href={% url "suggestions"%}>
+                                <i class="fa fa-comments-o" style="font-size:16px"></i>Suggestions</a>
                         </li>
                         {% if user.is_superuser %}
                         <li class="has-sub{% if page == "forms-admin" or page == "oc-admin" %} active {% endif %}">

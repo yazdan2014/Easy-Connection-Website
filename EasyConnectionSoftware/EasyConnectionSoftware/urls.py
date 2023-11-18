@@ -23,5 +23,7 @@ urlpatterns = [
     path('', home),
     path('admin/', admin.site.urls),
     path('dashboard/', include("dashboard.urls")),
-    path('dashboard/oct/', include("OCT.urls"))
+    path('dashboard/oct/', include("OCT.urls")),
+    path('dashboard/suggestions/', include("suggestions.urls")),
+
 ]
