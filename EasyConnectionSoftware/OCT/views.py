@@ -1,6 +1,6 @@
 
 from django.shortcuts import render, redirect
-from django.http import HttpResponseBadRequest
+from django.http import HttpResponseBadRequest,HttpResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
@@ -9,7 +9,9 @@ from dashboard.models import User
 import json
 from django.http import JsonResponse
 from datetime import *
+import csv
 from django.db.models import Q
+from djqscsv import render_to_csv_response
 
 # Create your views here.
 def dashboard_oc_tasks(request):
@@ -124,7 +126,7 @@ def get_dailytasks(request):
         return redirect("login")
     
     this_week = int(datetime.today().strftime("%U"))
-    selected_week = this_week - int(request.GET['week'])
+    selected_week = this_week + int(request.GET['week'])
 
 
     res_raw = OCT.objects.filter(user=request.GET['uid']).first().daily_tasks.filter(created_at__week=selected_week)
@@ -192,3 +194,15 @@ def comment_task(request):
             OCT.objects.filter(user=request.user).first().daily_tasks.filter(pk=request.GET['tid']).update(admin_comment="")
 
     return JsonResponse({'data':"Successful"})
+
+def export_excel(request):
+    if not request.user.is_authenticated:
+        return redirect("login")
+    start_date = request.GET['start']
+    end_date = request.GET['end']
+    query_set = OCT.objects.filter(user=request.user).first().daily_tasks.filter(created_at__range=[start_date,end_date]).values()
+    print(query_set)
+    if not query_set:
+        return HttpResponse('No Task Found')
+
+    return render_to_csv_response(query_set)
