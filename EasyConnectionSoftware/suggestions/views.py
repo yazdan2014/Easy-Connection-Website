@@ -18,5 +18,7 @@ def add_new_suggestion(request):
         if (not request.POST["title"]) or (not request.POST["description"]):
             return HttpResponseBadRequest("One or more fields are not filled")
         sample = SuggestionSample.objects.create(user=request.user ,description=request.POST["description"] ,title=request.POST["title"])
-        print('hello')
         return redirect("dashboard")
+def get_all_suggestion(request):
+    data = SuggestionSample.objects.all()
+    return render(request,'suggestions/suggestions-admin.html', {'page':'suggestions-admin', 'data' : data, 'counter' : 2})
