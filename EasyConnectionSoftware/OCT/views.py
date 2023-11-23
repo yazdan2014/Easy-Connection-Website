@@ -200,9 +200,14 @@ def export_excel(request):
         return redirect("login")
     start_date = request.GET['start']
     end_date = request.GET['end']
-    query_set = OCT.objects.filter(user=request.user).first().daily_tasks.filter(created_at__range=[start_date,end_date]).values()
+    user_id = request.GET['user']
+
+
+    user = User.objects.get(pk=user_id)
+    query_set = OCT.objects.filter(user=user).first().daily_tasks.filter(created_at__range=[start_date,end_date]).values()
     print(query_set)
     if not query_set:
         return HttpResponse('No Task Found')
 
-    return render_to_csv_response(query_set)
+    file_name =f"{user.username} Report ({start_date} to {end_date})"  
+    return render_to_csv_response(queryset=query_set,filename=file_name)

@@ -25,6 +25,16 @@ ROLES = (
         ('QC Expert', 'QC Expert'),
     )
 
+DEPARTMENTS =(
+    ('Finance', 'Finance'),
+    ('Logistic', 'Logistic'),
+    ('Supply & Marketing', 'Supply & Marketing'),
+    ('Technical', 'Technical'),
+    ('Sourcing', 'Sourcing'),
+    ('QMS', 'QMS'),
+
+)
+
 class User(AbstractUser):
     email = models.CharField(max_length=80,unique=True)
     username = models.CharField(max_length=45,unique=True)
@@ -33,8 +43,7 @@ class User(AbstractUser):
     last_name =  models.CharField(max_length=45)
 
     role = models.CharField(max_length=45, choices=ROLES)
-
-    
+    department = models.ForeignKey("Department",on_delete=models.SET_NULL, null=True)
 
     USERNAME_FIELD="username"
     REQUIRED_FIELDS=['email',"first_name","last_name","role"]
@@ -51,6 +60,11 @@ class User(AbstractUser):
         
 
         return super(User, self).save(*args, **kwargs)
+    
+
+class Department(models.Model):
+    department = models.CharField(max_length=45, choices=DEPARTMENTS)
+    moderator = models.ForeignKey("User", related_name='moderator',on_delete=models.SET_NULL, null=True)
     
 class FormTransition(models.Model):
     form = models.ForeignKey("UserForm", on_delete=models.CASCADE , null=True)

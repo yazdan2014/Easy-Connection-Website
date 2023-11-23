@@ -439,7 +439,7 @@ $(document).on('click','.export',function(){
     let enddate = $(`#${user}end`).val()
     console.log(user)
     
-    window.location.href = `{% url "export" %}?start=${startdate}&end=${enddate}`
+    window.location.href = `{% url "export" %}?start=${startdate}&end=${enddate}&user=${user}`
     
 });
 function handleDates(uid,first_day){
