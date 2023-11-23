@@ -3,6 +3,8 @@ docker-compose up -d --build
 ./manage.py startapp taskapp
 docker exec -it django /bin/sh
 
+# liara update
+liara deploy --platform=django
 
 
 

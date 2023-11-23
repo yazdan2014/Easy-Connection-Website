@@ -92,7 +92,11 @@
                                 <li {% if page == "forms-admin" %} class="active" {% endif %}>
                                     <a href={% url "forms-admin"%}>
                                         <i class="far fa-address-card"></i>Forms Admin</a>
-                                </li>    
+                                </li>
+                                <li {% if page == "suggestions-admin" %} class="active" {% endif %}>
+                                    <a href={% url "suggestions-admin"%}>
+                                        <i class="fa fa-envelope-o"></i>suggestions Admin</a>
+                                </li>  
     
                             </ul>
                         </li>
@@ -134,7 +138,7 @@
                                 <i class="fa fa-comments-o" style="font-size:16px"></i>Suggestions</a>
                         </li>
                         {% if user.is_superuser %}
-                        <li class="has-sub{% if page == "forms-admin" or page == "oc-admin" %} active {% endif %}">
+                        <li class="has-sub{% if page == "forms-admin" or page == "oc-admin" or page == "suggestions-admin"%} active {% endif %}">
                             <a class="js-arrow" href="#"><i class="fa fa-angle-down"></i>Admin</a>
                             <ul class="navbar-mobile-sub__list list-unstyled js-sub-list">
                                 <li {% if page == "oc-admin" %} class="active" {% endif %}>
@@ -144,7 +148,11 @@
                                 <li {% if page == "forms-admin" %} class="active" {% endif %}>
                                     <a href={% url "forms-admin"%}>
                                         <i class="far fa-address-card"></i>Forms Admin</a>
-                                </li>    
+                                </li>   
+                                <li {% if page == "suggestions-admin" %} class="active" {% endif %}>
+                                    <a href={% url "suggestions-admin"%}>
+                                        <i class="fa fa-envelope-o"></i>suggestions Admin</a>
+                                </li>     
     
                             </ul>
                         </li>
