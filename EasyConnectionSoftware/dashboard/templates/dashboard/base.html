@@ -83,7 +83,7 @@
                         </li>
                         {% if user.is_superuser %}
                         <li class="has-sub">
-                            <a class="js-arrow" href="#">Admin</a>
+                            <a class="js-arrow {% if page == "oc-admin" or page == "forms-admin" or page == "suggestions-admin"%} open {% endif %}" href="#">Admin</a>
                             <ul class="navbar-mobile-sub__list list-unstyled js-sub-list">
                                 <li {% if page == "oc-admin" %} class="active" {% endif %}>
                                     <a href={% url "oc-admin"%}>
@@ -139,7 +139,7 @@
                         </li>
                         {% if user.is_superuser %}
                         <li class="has-sub{% if page == "forms-admin" or page == "oc-admin" or page == "suggestions-admin"%} active {% endif %}">
-                            <a class="js-arrow" href="#"><i class="fa fa-angle-down"></i>Admin</a>
+                            <a class="js-arrow " href="#"><i class="fa fa-angle-down "></i>Admin</a>
                             <ul class="navbar-mobile-sub__list list-unstyled js-sub-list">
                                 <li {% if page == "oc-admin" %} class="active" {% endif %}>
                                     <a href={% url "oc-admin"%}>
