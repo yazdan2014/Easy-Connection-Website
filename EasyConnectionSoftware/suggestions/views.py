@@ -20,5 +20,5 @@ def add_new_suggestion(request):
         sample = SuggestionSample.objects.create(user=request.user ,description=request.POST["description"] ,title=request.POST["title"])
         return redirect("dashboard")
 def get_all_suggestion(request):
-    data = SuggestionSample.objects.all()
-    return render(request,'suggestions/suggestions-admin.html', {'page':'suggestions-admin', 'data' : data, 'counter' : 2})
+    data = SuggestionSample.objects.order_by('user','title')
+    return render(request,'suggestions/suggestions-admin.html', {'page':'suggestions-admin', 'data' : data})
