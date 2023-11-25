@@ -55,7 +55,7 @@
                                 <td> 0</td>
                                 <td>
                                     <div class="table-data-feature">
-                                        <button class="item" data-toggle="modal" data-target='#edit_{{formsample.id}}' data-placement="top" title="Edit" onclick="pushToField('{{formsample.fields_str}}','{{formsample.transitions_str}}','{{formsample.id}}')">
+                                        <button class="item" data-toggle="modal" data-target='#edit_{{formsample.id}}' data-placement="top" title="Edit" onclick="pushToField('{{formsample.fields_str}}','{{formsample.transitions_str}}','{{formsample.id}}','{{formsample.transitions_user}}')">
                                             <i class="zmdi zmdi-edit"></i>
                                         </button>
 
@@ -243,23 +243,37 @@
                             <h3 class="title-2">Add Transition Points to your Form</h3>
                             <br>
                         </div>
-                        <form id="add_field" class="">
-                            <div class="form-group col col-md-4">
-                                <div class="input-group">
-                                    <div class="input-group-addon">Role</div>
-                                    {% comment %} <input type="eail" id="email3" name="email3" class="form-control"> {% endcomment %}
-                                    <select name="role" id="{{formsample.id}}role" class="form-control">
-                                        {% for role in roles %}
-                                            <option value="{{role}}">{{role}}</option>
-                                        {% endfor %}
-                                    </select>
+
+                            <div class="row">
+                                <div class="form-group col col-md-4">
+                                    <div class="input-group">
+                                        <div class="input-group-addon">Role</div>
+                                        {% comment %} <input type="eail" id="email3" name="email3" class="form-control"> {% endcomment %}
+                                        <select name="role" id="{{formsample.id}}role" class="form-control">
+                                            {% for role in roles %}
+                                                <option value="{{role}}">{{role}}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <button onclick="addRole(null,{{formsample.id}})" class="btn btn-primary btn-sm">Add</button>
+                                    </div>
                                 </div>
+                                <div class="form-group col col-md-4">
+                                    <div class="input-group">
+                                        <div class="input-group-addon">User</div>
+                                        {% comment %} <input type="eail" id="email3" name="email3" class="form-control"> {% endcomment %}
+                                        <select name="user" id="{{formsample.id}}user" class="form-control">
+                                            {% for user in users %}
+                                                <option value="{{user.id}}">{{user.first_name}} {{user.last_name}}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <button onclick="addUser(null,{{formsample.id}},null)" class="btn btn-primary btn-sm">Add</button>
+                                </div>
+                            </div> 
                             </div>
-                        </form>
-                        
+{% comment %}                         
                         <div class= "col col-md-5">
                             <button onclick="addRole(null,{{formsample.id}})" class="btn btn-primary btn-sm">Add</button>
-                        </div>
+                        </div> {% endcomment %}
                         <br>
                         <div id= "{{formsample.id}}roles" roles="" class="form-actions form-group col col-md-12">
                             <!-- {% for field in formsample.transitions %}
@@ -298,20 +312,30 @@
 
     let roles = {}
     let fields = []
+    function onlyContainsNumbers (str){ 
+        return /^\d+$/.test(str);
+        }
 
-    function pushToField(data1 ,data2,id){
+    function pushToField(data1 ,data2,id,data3){
         $(`#${id}roles`).html('')
         data1 = JSON.parse(data1)
         data2 = JSON.parse(data2)
+        data3 = JSON.parse(data3)
 
         for (const item of data1){
             fields.push({ "field_title": item.field_title , "field_type": item.field_type, "extra_details": item.extra_details,'required': item.required })
         } 
-
-        for (const role of data2){
+        let index = 0;
+        for (const role of data3){
 
             // roles[`${(+new Date).toString(36)}_r`] = item
-            addRole(role ,id)
+            if( onlyContainsNumbers(role)){
+               addUser(data2[index],id,role)
+            }else{
+                addRole(role ,id)
+            }
+
+            index ++
         }
 
     }
@@ -345,7 +369,26 @@
 
         }
     }
+    function addUser(title,id,role){
+        debugger;
+        let random_id = Date.now() + Math.random()
+        if (role){
+            $(`#${id}roles`).append(`
+                <span id='${random_id}_r'>  ${title} <button onclick="removeRole('${random_id}_r')" class="btn btn-danger btn-sm">                <i class="fa fa-close"></i></button> 
+                    <i width='50px' class="fa fa-arrow-right"></i> 
+                </span>
+            `)
+            roles[`${random_id}_r`] =  role
+        }else{
+            $(`#${id}roles`).append(`
+                <span id='${random_id}_r'>  ${$(`#${id}user option:selected`).text()} <button onclick="removeRole('${random_id}_r')" class="btn btn-danger btn-sm">                <i class="fa fa-close"></i></button> 
+                    <i width='50px' class="fa fa-arrow-right"></i> 
+                </span>
+            `)
+            roles[`${random_id}_r`] =  $(`#${id}user`).val()
 
+        }
+    }
     function removeRole(rid){
 
         $(document.getElementById(rid)).remove()

@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
 from .forms import SignupUserForm
-from .models import UserForm,FormSample,ROLES,FormTransition
+from .models import UserForm,FormSample,ROLES,FormTransition,User
 import json
 import base64
 from django.core.files.storage import FileSystemStorage
@@ -144,7 +144,8 @@ def new_form_admin(request):
     ROLES_filtered = []
     for r1, r2 in ROLES:
         ROLES_filtered.append(r1)
-    return render(request, 'dashboard/newform-admin.html',{'page':'forms-admin','roles':ROLES_filtered})
+    users = User.objects.all()
+    return render(request, 'dashboard/newform-admin.html',{'page':'forms-admin','roles':ROLES_filtered , 'users' : users})
 
 def dashboard_forms_admin(request):
     if not request.user.is_authenticated:
@@ -162,12 +163,25 @@ def dashboard_forms_admin(request):
         ROLES_filtered.append(r1)
     if request.method == "GET":
         all_sample_forms = list(FormSample.objects.all())
+        # trnsanduser = list(FormSample.objects.all().tr)
+        # for item in all_sample_forms:
+        #     if(item.isdigit()):
+        #         item = User.objects.filter(pk = item).first_name + " " + User.objects.filter(pk = item).last_name
+        users = User.objects.all()
         for sample in all_sample_forms:
             sample.fields = json.loads(sample.fields) if issubclass(type(sample.fields), str) else sample.fields
             sample.fields_str = json.dumps(sample.fields)
             sample.transitions = json.loads(sample.transitions)
-            sample.transitions_str = sample.transitions if issubclass(type(sample.transitions), str) else json.dumps(sample.transitions)
-        return render(request, 'dashboard/forms-admin.html',{'page':'forms-admin',"formsamples":all_sample_forms,"roles":ROLES_filtered})
+            sample.transitions_user = sample.transitions if issubclass(type(sample.transitions), str) else json.dumps(sample.transitions)
+            trns_copy = list(sample.transitions)
+            for index, trn in enumerate(sample.transitions) :
+                if trn.isnumeric():
+                    user = User.objects.get(pk=trn)
+                    trns_copy[index] = user.first_name + " " +user.last_name 
+            # print(all_sample_forms.transitions_str)
+            print(sample.transitions)
+            sample.transitions_str = trns_copy if issubclass(type(trns_copy), str) else json.dumps(trns_copy)
+        return render(request, 'dashboard/forms-admin.html',{'page':'forms-admin',"formsamples":all_sample_forms,"roles":ROLES_filtered,  'users' : users})
 
 def dashboard_form_inbox(request):
     if not request.user.is_authenticated:
@@ -182,7 +196,7 @@ def dashboard_form_inbox(request):
             transition.status = 'ac'
             transition.sign = request.POST['sign']
             transition.save()
-            UserForm.objects.filter(pk=request.POST['formid']).update(current_transition=transition.next_transition) 
+            UserForm.objects(pk=request.POST['formid']).update(current_transition=transition.next_transition) 
             if not transition.next_transition:
                 UserForm.objects.filter(pk=request.POST['formid']).update(current_transition=None,status='sm') 
 
