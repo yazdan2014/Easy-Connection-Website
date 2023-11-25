@@ -5,26 +5,24 @@
 
 {% block content %}
 {% comment %} {% for item in data %} {% endcomment %}
-<div class="row m-t-25">
-    <div class="col-sm-6 col-lg-3">
+<div class="row">
     {% for item in data %}
-        <div class="col-sm-6 col-lg-3">
+        <div class="col-sm-6 col-lg-4">
             <div class="overview-item overview-item--c2">
-                        <div class="overview__inner">
-                            <div class="overview-box clearfix">
-                                <div class="icon">
-                                    <i class="zmdi zmdi-account-o"></i>
-                                </div>
-                                <div class="text">
-                                    <h2>{{item.user}}</h2>
-                                    <span>{{item.title}}</span>
-                                </div>
-                            </div>
+                <div class="overview__inner">
+                    <div class="overview-box clearfix">
+                        <div class="icon">
+                            <i class="zmdi zmdi-account-o"></i>
                         </div>
+                        <div class="text">
+                            <h2>{{item.user}}</h2>
+                            <span>{{item.title}}</span>
+                        </div>
+                    </div>
+                </div>
             </div> 
         </div>
     {% endfor %}
-    </div>
 </div>
 
 {% endblock content %}
