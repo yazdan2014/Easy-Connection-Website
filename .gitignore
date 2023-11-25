@@ -136,3 +136,4 @@ GitHub.sublime-settings
 !.vscode/extensions.json 
 .history
 EasyConnectionSoftware/db/db.sqlite3
+*.sqlite3
