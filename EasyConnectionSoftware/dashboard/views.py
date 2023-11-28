@@ -110,10 +110,21 @@ def dashboard_new_form(request,form_title):
         tranisitions = [None,]
         # print(json.loads(form_sample.transitions))
         for trn in json.loads(form_sample.transitions):
-            tranisition = FormTransition.objects.create(form=userform,receivers_role=trn)
+            if trn == 'Department Moderator (Generic)':
+                user_department = request.user.department
+                if user_department:
+                    tranisition = FormTransition.objects.create(form=userform,receivers_role=str(user_department.moderator.first_name + " " + user_department.moderator.last_name))
+                else:
+                    tranisition = FormTransition.objects.create(form=userform,receivers_role="CEO")
+
+            elif trn in roles_filtered():
+                tranisition = FormTransition.objects.create(form=userform,receivers_role=trn)
+            else:
+                tranisition = FormTransition.objects.create(form=userform,receivers_role=trn)
+
             tranisitions.append(tranisition)
             userform.all_transitions.add(tranisition)
-            # print(trn)
+
         tranisitions.append(None)
         
         for prev, current, nxt in zip(tranisitions, tranisitions[1:], tranisitions[2:]):
@@ -135,8 +146,11 @@ def dashboard_new_form(request,form_title):
             field['extra_details'] = field['extra_details'].split('\n')
     return render(request, 'dashboard/newform.html',{'page':'forms-admin','form_title':form_sample.title,'form_description':form_sample.description,"fields":form_sample.fields})
     
-
-
+def roles_filtered():
+    ROLES_filtered = []
+    for r1, r2 in ROLES:
+        ROLES_filtered.append(r1)
+    return ROLES_filtered
 
 def new_form_admin(request):
     if not request.user.is_authenticated:
@@ -144,8 +158,7 @@ def new_form_admin(request):
     ROLES_filtered = []
     for r1, r2 in ROLES:
         ROLES_filtered.append(r1)
-    users = User.objects.all()
-    return render(request, 'dashboard/newform-admin.html',{'page':'forms-admin','roles':ROLES_filtered , 'users' : users})
+    return render(request, 'dashboard/newform-admin.html',{'page':'forms-admin','roles':ROLES_filtered})
 
 def dashboard_forms_admin(request):
     if not request.user.is_authenticated:
@@ -163,10 +176,6 @@ def dashboard_forms_admin(request):
         ROLES_filtered.append(r1)
     if request.method == "GET":
         all_sample_forms = list(FormSample.objects.all())
-        # trnsanduser = list(FormSample.objects.all().tr)
-        # for item in all_sample_forms:
-        #     if(item.isdigit()):
-        #         item = User.objects.filter(pk = item).first_name + " " + User.objects.filter(pk = item).last_name
         users = User.objects.all()
         for sample in all_sample_forms:
             sample.fields = json.loads(sample.fields) if issubclass(type(sample.fields), str) else sample.fields
@@ -182,6 +191,8 @@ def dashboard_forms_admin(request):
             print(sample.transitions)
             sample.transitions_str = trns_copy if issubclass(type(trns_copy), str) else json.dumps(trns_copy)
         return render(request, 'dashboard/forms-admin.html',{'page':'forms-admin',"formsamples":all_sample_forms,"roles":ROLES_filtered,  'users' : users})
+        #     sample.transitions_str = sample.transitions if issubclass(type(sample.transitions), str) else json.dumps(sample.transitions)
+        # return render(request, 'dashboard/forms-admin.html',{'page':'forms-admin',"formsamples":all_sample_forms,"roles":ROLES_filtered})
 
 def dashboard_form_inbox(request):
     if not request.user.is_authenticated:
@@ -196,7 +207,7 @@ def dashboard_form_inbox(request):
             transition.status = 'ac'
             transition.sign = request.POST['sign']
             transition.save()
-            UserForm.objects(pk=request.POST['formid']).update(current_transition=transition.next_transition) 
+            UserForm.objects.filter(pk=request.POST['formid']).update(current_transition=transition.next_transition) 
             if not transition.next_transition:
                 UserForm.objects.filter(pk=request.POST['formid']).update(current_transition=None,status='sm') 
 
@@ -221,7 +232,7 @@ def dashboard_form_inbox(request):
 
         return redirect("forms-inbox")
 
-    forms_inbox = list(UserForm.objects.filter(current_transition__receivers_role = request.user.role))
+    forms_inbox = list(UserForm.objects.filter(Q(current_transition__receivers_role = request.user.role)|Q(current_transition__receivers_role = str(request.user.first_name + " " + request.user.last_name))))
 
     submitted_forms = list(UserForm.objects.filter(status='sm'))
     if submitted_forms:
@@ -238,6 +249,20 @@ def dashboard_form_inbox(request):
     if forms_inbox:
         for form in forms_inbox:
             form.fields = form.fields
+
+
+    # for form in forms_inbox:
+    #     if not form.current_transition:
+    #         continue
+    #     if form.current_transition.receivers_role.isnumeric():
+    #         user = User.objects.get(pk=form.current_transition.receivers_role)
+    #         form.current_transition.receivers_role = user.first_name + " " + user.last_name
+    #     for index, trn in enumerate(form.all_transitions.all()):
+    #         if trn.receivers_role.isnumeric():
+    #             print(trn)
+    #             user = User.objects.get(pk=trn.receivers_role)
+    #             trn.receivers_role = user.first_name + " " + user.last_name
+            
     return render(request, 'dashboard/forms-inbox.html',{"forms_inbox":forms_inbox,'page':'forms-inbox'})
 
 def dashboard_update_form(request,form_id):

@@ -5,6 +5,8 @@ import json
 from OCT.models import OCT
 # Create your models here.
 ROLES = (
+        ('Department Moderator (Generic)', 'Department Moderator (Generic)'),
+
         ('CEO', 'CEO'),
         ('Chief Officer', 'Chief Officer'),
         ('CEO Deligate', 'CEO Deligate'),
@@ -32,7 +34,6 @@ DEPARTMENTS =(
     ('Technical', 'Technical'),
     ('Sourcing', 'Sourcing'),
     ('QMS', 'QMS'),
-
 )
 
 class User(AbstractUser):
@@ -47,7 +48,11 @@ class User(AbstractUser):
 
     USERNAME_FIELD="username"
     REQUIRED_FIELDS=['email',"first_name","last_name","role"]
-    
+
+    def is_moderator(self):
+        if Department.objects.filter(moderator=self).exists():
+            return True
+
     def __str__(self):
         return self.username
 
@@ -57,10 +62,10 @@ class User(AbstractUser):
             if not OCT.objects.filter(user=self).exists():
                 OCT.objects.create(user=self)
             return obj
-        
+
 
         return super(User, self).save(*args, **kwargs)
-    
+
 
 class Department(models.Model):
     department = models.CharField(max_length=45, choices=DEPARTMENTS)
