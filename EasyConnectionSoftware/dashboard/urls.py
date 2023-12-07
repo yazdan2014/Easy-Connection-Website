@@ -11,6 +11,7 @@ urlpatterns = [
     path("forms/<str:form_title>", views.dashboard_new_form, name="form-add"),
     path('forms/update/<str:form_id>', views.dashboard_update_form, name='form-update' ),
     path("forms-inbox/", views.dashboard_form_inbox, name="forms-inbox"),
+    path("forms-inbox/roles/", views.get_role_users, name="forms-inbox-roles"),
 
 
     path("forms-admin/", views.dashboard_forms_admin, name="forms-admin"),

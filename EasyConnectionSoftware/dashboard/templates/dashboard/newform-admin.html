@@ -133,8 +133,8 @@
                             <div class="input-group-addon">User</div>
                             {% comment %} <input type="eail" id="email3" name="email3" class="form-control"> {% endcomment %}
                             <select name="user" id="user" class="form-control">
-                                {% for user in users %}
-                                    <option value="{{user.id}}">{{user.first_name}} {{user.last_name}}</option>
+                                {% for auser in users %}
+                                    <option value="{{auser.id}}">{{auser.first_name}} {{auser.last_name}}</option>
                                 {% endfor %}
                             </select>
                             <button onclick="addUser()" class="btn btn-primary btn-sm">Add</button>

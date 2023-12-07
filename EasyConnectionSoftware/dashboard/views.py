@@ -9,7 +9,7 @@ import json
 import base64
 from django.core.files.storage import FileSystemStorage
 from django.db.models import Q
-
+from django.http import JsonResponse
 
 # Create your views here.
 def home(request):
@@ -87,7 +87,7 @@ def dashboard_new_form(request,form_title):
             print(file)
             fs = FileSystemStorage()
             file_name = fs.save(file.name, file)
-            file_url = fs.url(filename)
+            file_url = fs.url(file_name)
 
             finaldict[filename]=file_url
 
@@ -158,7 +158,8 @@ def new_form_admin(request):
     ROLES_filtered = []
     for r1, r2 in ROLES:
         ROLES_filtered.append(r1)
-    return render(request, 'dashboard/newform-admin.html',{'page':'forms-admin','roles':ROLES_filtered})
+    users = User.objects.all()
+    return render(request, 'dashboard/newform-admin.html',{'page':'forms-admin','roles':ROLES_filtered,'users':users})
 
 def dashboard_forms_admin(request):
     if not request.user.is_authenticated:
@@ -201,8 +202,16 @@ def dashboard_form_inbox(request):
         transition = UserForm.objects.get(pk=request.POST['formid']).current_transition
         if request.POST['comment']:
             transition.comment=request.POST['comment']
-            
-        print(request.POST)
+        
+        # print(request.POST)
+        print(request.POST["role"].isdigit())
+        if request.POST["role"].isdigit():
+            print("sdf")
+            user = User.objects.get(pk=request.POST["role"])
+            transition.next_transition.receivers_role = user.first_name + " " + user.last_name
+            transition.next_transition.save()
+
+        # return
         if request.POST['action'] == 'accept':
             transition.status = 'ac'
             transition.sign = request.POST['sign']
@@ -262,9 +271,16 @@ def dashboard_form_inbox(request):
     #             print(trn)
     #             user = User.objects.get(pk=trn.receivers_role)
     #             trn.receivers_role = user.first_name + " " + user.last_name
+    
+    
             
     return render(request, 'dashboard/forms-inbox.html',{"forms_inbox":forms_inbox,'page':'forms-inbox'})
 
+def get_role_users(request):
+    print( request.GET)
+    if request.GET['role']:
+        return JsonResponse({"data":list(User.objects.filter(role=request.GET['role']).values())})
+    
 def dashboard_update_form(request,form_id):
     finaldict = {}
     for key, value in dict(request.POST).items():

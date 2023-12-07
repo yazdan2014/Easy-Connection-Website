@@ -13,7 +13,7 @@
     <meta name="keywords" content="au theme template">
 
     <!-- Title Page-->
-    <title>Dashboard</title>
+    {% comment %} <title>Dashboard</title> {% endcomment %}
 
     <!-- Fontfaces CSS-->
     <link href={% static "css/font-face.css" %} rel="stylesheet" media="all">
@@ -65,10 +65,10 @@
             <nav class="navbar-mobile">
                 <div class="container-fluid">
                     <ul class="navbar-mobile__list list-unstyled">
-                        <li {% if page == "dashboard" %} class="active" {% endif %}>
+                        {% comment %} <li {% if page == "dashboard" %} class="active" {% endif %}>
                             <a href="{% url "dashboard"  %}">
                                 <i class="fas fa-tachometer-alt"></i>Dashboard</a>
-                        </li>
+                        </li> {% endcomment %}
                         <li {% if page == "forms" %} class="active" {% endif %}>
                             <a href={% url "forms"%}>
                                 <i class="far fa-check-square"></i>Forms</a>
@@ -117,10 +117,10 @@
             <div class="menu-sidebar__content js-scrollbar1">
                 <nav class="navbar-sidebar">
                     <ul class="list-unstyled navbar__list">
-                        <li {% if page == "dashboard" %} class="active" {% endif %}>
+                        {% comment %} <li {% if page == "dashboard" %} class="active" {% endif %}>
                             <a href="{% url "dashboard"  %}">
                                 <i class="fas fa-tachometer-alt"></i>Dashboard</a>
-                        </li>
+                        </li> {% endcomment %}
                         <li {% if page == "forms" %} class="active" {% endif %}>
                             <a href={% url "forms"%}>
                                 <i class="far fa-check-square"></i>Forms</a>
@@ -348,7 +348,7 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="copyright">
-                                    <p>Copyright © Yazdan Zn</a>.</p>
+                                    <p>Copyright © GWM.</p>
                                 </div>
                             </div>
                         </div>

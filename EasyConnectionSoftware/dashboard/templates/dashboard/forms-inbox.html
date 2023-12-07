@@ -98,9 +98,15 @@
                             <div class="col col-md-3">
                                 <label class=" form-control-label">{{ key }}</label>
                             </div>
+                            {% if "uploads" in value %}
+                                <div class="col-12 col-md-9">
+                                    <a href='{{ value }}'>FILE</a>                      
+                                </div>
+                            {% else %}
                             <div class="col-12 col-md-9">
-                                {{ value.0 }}                      
+                                {{ value.0 }}                 
                             </div>
+                            {% endif %}
                         </div>
                     {% endfor %}
                     <hr>
@@ -174,6 +180,27 @@
                             </div>                        
                         </div>
                     </div>
+                    {% if form.current_transition.next_transition %}
+                    <div class="row form-group">
+                        <div class="col col-md-3">
+                            <label for="text-input" class=" form-control-label">Choose your desired next user:</label>
+                        </div>
+                        <div class="col col-md-4">
+                            <div class="form-check" >
+                                <select name="role" role='{{form.current_transition.next_transition.receivers_role}}' id='users{{form.id}}' class="form-control">
+                                </select>
+                                {% comment %} {% if  %}
+                                <div class="radio">
+                                    <label class="form-check-label ">
+                                        <input type="radio" name="action" value="sendback" class="form-check-input">
+                                        <span class="badge badge-info">Send Back</span>
+                                    </label>
+                                </div>
+                                {% endif %} {% endcomment %}
+                            </div>                        
+                        </div>
+                    </div>
+                    {% endif %}
                     <div class="row form-group">
                         <div class="col col-md-3">
                             <label for="text-input" class=" form-control-label">Comment:</label>
@@ -219,6 +246,26 @@
     for(const canva of canvas){
         new SignaturePad(canva);
     }
+
+    $('.modal').on('shown.bs.modal', function(e) {
+        console.log($('#users'+$(this)[0].id).attr('role'))
+        role = $('#users'+$(this)[0].id).attr('role')
+        id = $(this)[0].id
+        $.get({
+            url: '{% url "forms-inbox-roles" %}',
+            data: 'role='+role,
+            contentType:"application/x-www-form-urlencoded; charset=UTF-8",
+            success: function (data, textStatus, jqXHR) {
+                final = '<option value="all">all</option>'
+                for( const user of data.data ){
+                    final += `<option value="${user.id}">${user.first_name} ${user.last_name}</option>`
+                    
+                }
+                console.log($('#users'+id))
+                $('#users'+id).html(final)
+            },
+        })
+    });
 
     $('form').submit(function(e){
         //prevent default
