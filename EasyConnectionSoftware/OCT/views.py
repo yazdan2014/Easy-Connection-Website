@@ -38,8 +38,10 @@ def dashboard_oc_tasks(request):
     found_oct = OCT.objects.filter(user=request.user).first()
     monthly_tasks = list(found_oct.monthly_tasks.filter(Q(created_at__month=date.today().month) | ~Q(progress_percentage__in = ['100','100%','100 %'])))
     daily_tasks = list(found_oct.daily_tasks.filter(Q(created_at__gte=date.today()) | Q(status='nd')))
+    daily_done = found_oct.daily_tasks.filter(status='done').count()
+    daily_notdone = found_oct.daily_tasks.count() - daily_done
 
-    return render(request, 'OCT/oc-tasks.html',{'page':'oc-tasks','daily_tasks':daily_tasks,"monthly_tasks":monthly_tasks})
+    return render(request, 'OCT/oc-tasks.html',{'page':'oc-tasks','daily_tasks':daily_tasks,"monthly_tasks":monthly_tasks,'daily_tasks_notdone':daily_notdone,"daily_tasks_done":daily_done})
 
 
 
@@ -180,18 +182,18 @@ def check_task(request):
 def comment_task(request):
     if not request.user.is_authenticated:
         return redirect("login")
-    print(request.GET)
+    
     if request.GET.get('type') == 'monthly':
         if request.GET.get('cmt'):
-            OCT.objects.filter(user=request.user).first().monthly_tasks.filter(pk=request.GET['tid']).update(admin_comment=f"{request.GET.get('cmt')}")
+            OCT.objects.filter(user=request.user).first().monthly_tasks.filter(pk=request.GET['tid']).update(admin_comment=f"{request.GET.get('cmt')}",checked_by_admin=True)
         else :
-            OCT.objects.filter(user=request.user).first().monthly_tasks.filter(pk=request.GET['tid']).update(admin_comment="")
+            OCT.objects.filter(user=request.user).first().monthly_tasks.filter(pk=request.GET['tid']).update(admin_comment="",checked_by_admin=True)
 
     else:
         if request.GET.get('cmt'):
-            OCT.objects.filter(user=request.user).first().daily_tasks.filter(pk=request.GET['tid']).update(admin_comment=f"{request.GET.get('cmt')}")
+            OCT.objects.filter(user=request.user).first().daily_tasks.filter(pk=request.GET['tid']).update(admin_comment=f"{request.GET.get('cmt')}",checked_by_admin=True)
         else :
-            OCT.objects.filter(user=request.user).first().daily_tasks.filter(pk=request.GET['tid']).update(admin_comment="")
+            OCT.objects.filter(user=request.user).first().daily_tasks.filter(pk=request.GET['tid']).update(admin_comment="",checked_by_admin=True)
 
     return JsonResponse({'data':"Successful"})
 

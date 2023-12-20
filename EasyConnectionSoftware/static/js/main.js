@@ -334,7 +334,12 @@
     var ctxs = document.getElementsByClassName("percent-charts");
     if (ctxs) {
       Array.from(ctxs).forEach(function(ctx){
-        ctx.height = 70;
+        
+        if(ctx.getAttribute('size') == 'sm'){
+          ctx.height = 70;
+        }else if (ctx.getAttribute('size') == 'lg'){
+          ctx.height = 250;
+        }
         var myChart = new Chart(ctx, {
           type: 'doughnut',
           data: {
@@ -393,7 +398,7 @@
     // Percent Chart
     var ctx = document.getElementById("percent-chart");
     if (ctx) {
-      ctx.height = 280;
+      ctx.height = 200;
       var myChart = new Chart(ctx, {
         type: 'doughnut',
         data: {

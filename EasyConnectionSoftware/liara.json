@@ -6,12 +6,8 @@
           "mountTo": "db/"
         },
         {
-          "name": "logs",
-          "mountTo": "tmp/"
-        },
-        {
           "name": "uploads",
-          "mountTo": "uploads/"
+          "mountTo": "uploads"
         }
       ]
   }

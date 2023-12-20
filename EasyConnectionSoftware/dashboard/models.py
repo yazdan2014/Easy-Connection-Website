@@ -34,6 +34,8 @@ DEPARTMENTS =(
     ('Technical', 'Technical'),
     ('Sourcing', 'Sourcing'),
     ('QMS', 'QMS'),
+    ('CEO', 'CEO'),
+    ('IT', 'IT'),
 )
 
 class User(AbstractUser):
@@ -70,6 +72,8 @@ class User(AbstractUser):
 class Department(models.Model):
     department = models.CharField(max_length=45, choices=DEPARTMENTS)
     moderator = models.ForeignKey("User", related_name='moderator',on_delete=models.SET_NULL, null=True)
+    def __str__(self) :
+        return self.department
     
 class FormTransition(models.Model):
     form = models.ForeignKey("UserForm", on_delete=models.CASCADE , null=True)

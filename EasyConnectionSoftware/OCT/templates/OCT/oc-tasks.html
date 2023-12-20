@@ -130,17 +130,17 @@
                         <div class="chart-note-wrap">
                             <div class="chart-note mr-0 d-block">
                                 <span class="dot dot--blue"></span>
-                                <span>products</span>
+                                <span>Tasks Done</span>
                             </div>
                             <div class="chart-note mr-0 d-block">
                                 <span class="dot dot--red"></span>
-                                <span>services</span>
+                                <span>Tasks Not Done</span>
                             </div>
                         </div>
                     </div>
                     <div class="col-xl-6">
                         <div class="percent-chart">
-                            <canvas id="percent-chart"></canvas>
+                            <canvas size="lg" dailytasksDone='{{ daily_tasks_done }}' dailytasksNotDone='{{ daily_tasks_notdone }}' class="percent-charts"></canvas>
                         </div>
                     </div>
                 </div>
