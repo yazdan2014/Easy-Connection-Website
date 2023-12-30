@@ -5,6 +5,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
 from .models import *
+from dashboard.models import *
 from dashboard.models import User
 import json
 from django.http import JsonResponse
@@ -95,7 +96,11 @@ def oc_admin(request):
         return redirect("login")
 
     
-    users = list(User.objects.all())
+    if request.user.is_superuser:
+        users = list(User.objects.all())
+    else:
+        department = Department.objects.get(moderator=request.user)
+        users = list(User.objects.filter(department=department))
     users_serialzed = []
     for user in users:
         oct = OCT.objects.filter(user=user).first()
@@ -211,5 +216,5 @@ def export_excel(request):
     if not query_set:
         return HttpResponse('No Task Found')
 
-    file_name =f"{user.username} Report ({start_date} to {end_date})"  
+    file_name =f"{user.username} Report ({start_date} to {end_date}).csv"  
     return render_to_csv_response(queryset=query_set,filename=file_name)

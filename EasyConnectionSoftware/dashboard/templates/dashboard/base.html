@@ -13,6 +13,7 @@
     <meta name="keywords" content="au theme template">
 
     <!-- Title Page-->
+    
     {% comment %} <title>Dashboard</title> {% endcomment %}
 
     <!-- Fontfaces CSS-->
@@ -81,7 +82,7 @@
                             <a href={% url "oc-tasks"%}>
                                 <i class="far  fa-calendar-o"></i>Opening/Closing Tasks</a>
                         </li>
-                        {% if user.is_superuser %}
+                        {% if user.is_superuser or user.is_moderator %}
                         <li class="has-sub">
                             <a class="js-arrow {% if page == "oc-admin" or page == "forms-admin" or page == "suggestions-admin"%} open {% endif %}" href="#">Admin</a>
                             <ul class="navbar-mobile-sub__list list-unstyled js-sub-list">
@@ -89,14 +90,16 @@
                                     <a href={% url "oc-admin"%}>
                                         <i class="fas fa-desktop"></i>OCT Admin</a>
                                 </li>
-                                <li {% if page == "forms-admin" %} class="active" {% endif %}>
-                                    <a href={% url "forms-admin"%}>
-                                        <i class="far fa-address-card"></i>Forms Admin</a>
-                                </li>
-                                <li {% if page == "suggestions-admin" %} class="active" {% endif %}>
-                                    <a href={% url "suggestions-admin"%}>
-                                        <i class="fa fa-envelope-o"></i>suggestions Admin</a>
-                                </li>  
+                                {% if user.is_superuser %}
+                                    <li {% if page == "forms-admin" %} class="active" {% endif %}>
+                                        <a href={% url "forms-admin"%}>
+                                            <i class="far fa-address-card"></i>Forms Admin</a>
+                                    </li>
+                                    <li {% if page == "suggestions-admin" %} class="active" {% endif %}>
+                                        <a href={% url "suggestions-admin"%}>
+                                            <i class="fa fa-envelope-o"></i>suggestions Admin</a>
+                                    </li>  
+                                {% endif %}
     
                             </ul>
                         </li>
@@ -137,7 +140,7 @@
                             <a href={% url "suggestions"%}>
                                 <i class="fa fa-comments-o" style="font-size:16px"></i>Suggestions</a>
                         </li>
-                        {% if user.is_superuser %}
+                        {% if user.is_superuser or user.is_moderator %}
                         <li class="has-sub{% if page == "forms-admin" or page == "oc-admin" or page == "suggestions-admin"%} active {% endif %}">
                             <a class="js-arrow " href="#"><i class="fa fa-angle-down "></i>Admin</a>
                             <ul class="navbar-mobile-sub__list list-unstyled js-sub-list">
@@ -145,14 +148,16 @@
                                     <a href={% url "oc-admin"%}>
                                         <i class="fas fa-desktop"></i>OCT Admin</a>
                                 </li>
-                                <li {% if page == "forms-admin" %} class="active" {% endif %}>
-                                    <a href={% url "forms-admin"%}>
-                                        <i class="far fa-address-card"></i>Forms Admin</a>
-                                </li>   
-                                <li {% if page == "suggestions-admin" %} class="active" {% endif %}>
-                                    <a href={% url "suggestions-admin"%}>
-                                        <i class="fa fa-envelope-o"></i>suggestions Admin</a>
-                                </li>     
+                                {% if user.is_superuser %}
+                                    <li {% if page == "forms-admin" %} class="active" {% endif %}>
+                                        <a href={% url "forms-admin"%}>
+                                            <i class="far fa-address-card"></i>Forms Admin</a>
+                                    </li>   
+                                    <li {% if page == "suggestions-admin" %} class="active" {% endif %}>
+                                        <a href={% url "suggestions-admin"%}>
+                                            <i class="fa fa-envelope-o"></i>suggestions Admin</a>
+                                    </li>  
+                                {% endif %}   
     
                             </ul>
                         </li>
