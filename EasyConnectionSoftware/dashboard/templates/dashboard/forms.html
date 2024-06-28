@@ -53,11 +53,11 @@
                     </thead>
                     <tbody>
                     {% for user_form in user_forms %}
-                        <tr class='clickable-row' data-toggle="modal" onClick="" data-target="#{{user_form.id}}" style="cursor:pointer">
-                            <td>{{ user_form.id }} </td>
-                            <td>{{ user_form.sample.title }} </td>
-                            <td>{{ user_form.date }} </td>
-                            <td  class="process">{% if  user_form.status == 'sm'%} <span class="badge badge-success">Submitted</span> 
+                        <tr class='clickable-row {% if user_form.et == "urgent" %} bg-danger {% endif %}' data-toggle="modal" onClick="" data-target="#{{user_form.id}}" style="cursor:pointer">
+                            <td class="{% if user_form.et == "urgent" %} text-white {% endif %}"> {{user_form.id}} </td>
+                            <td class="{% if user_form.et == "urgent" %} text-white {% endif %}">{{ user_form.sample.title }} </td>
+                            <td class="{% if user_form.et == "urgent" %} text-white {% endif %}">{{ user_form.date }} </td>
+                            <td class="{% if user_form.et == "urgent" %} text-white {% endif %} process">{% if  user_form.status == 'sm'%} <span class="badge badge-success">Submitted</span> 
                                 {% elif user_form.status == 'dc'%}<span class="badge badge-danger">Declined</span>
                                 {% elif user_form.status == 'edit'%}<span class="badge badge-warning">Must Be Edited</span>                                
                                 {% else %}{{ user_form.current_transition.receivers_role }} {% endif %} </td>

@@ -65,11 +65,14 @@ def dashboard_forms(request):
         return redirect("login")
     
     all_sample_forms = list(FormSample.objects.all())
-    user_forms = UserForm.objects.filter(created_by=request.user)
-
+    user_forms = list(UserForm.objects.filter(created_by=request.user))
+        
     for form in user_forms:
         form.sample.transitions = json.loads(form.sample.transitions)
-
+        if form.fields.get('Execution Type'):
+            form.et = 'urgent'
+        else:
+            form.et = 'nou'
 
     return render(request, 'dashboard/forms.html',{'page':'forms','user_forms':user_forms, 'form_samples':all_sample_forms})
 
